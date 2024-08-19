@@ -7,28 +7,27 @@ public class MapEditor : MonoBehaviour
     public int X_Horizontal = 0;
     public int Y_Vertical = 0;
     public GameObject Tile = null;
-
     public List<GameObject> TileMap = new List<GameObject>();
 
-    private int minus_y = 0;
-    private int plus_y = 0;
-    private int line_y = 0;
+    private float minus_y = 0;
+    private float plus_y = 0;
+    private float line_y = 0;
     private short input_x = 0;
 
     private void Awake()
     {
-        BaseInit();
+        _BaseInit();
     }
 
     private void Start()
     {
         if (TileMap.Count <= 0)
         {
-            BaseInit();
+            _BaseInit();
         }
     }
 
-    private void BaseInit()
+    private void _BaseInit()
     {
         if (X_Horizontal != 0 && Y_Vertical != 0)
         {
