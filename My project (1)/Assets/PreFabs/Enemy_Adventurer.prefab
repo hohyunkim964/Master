@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2501033638776656279}
   - component: {fileID: 5102851362110193887}
   - component: {fileID: 1560669081688210953}
+  - component: {fileID: 2422659217838371320}
   m_Layer: 0
   m_Name: Enemy_Adventurer
   m_TagString: Enemy
@@ -163,6 +164,7 @@ MonoBehaviour:
   IsAttack: 0
   _curPos_X: -1
   _curPos_Y: -1
+  _opponentInfo: []
 --- !u!50 &5102851362110193887
 Rigidbody2D:
   serializedVersion: 4
@@ -207,3 +209,25 @@ MonoBehaviour:
   IsAttack: 0
   _curPos_X: -1
   _curPos_Y: -1
+  _opponentInfo: []
+--- !u!95 &2422659217838371320
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1326425295298199858}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 14a87c3bc17371e4e8dd312c119828e6, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

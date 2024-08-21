@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5540724263574258655}
   - component: {fileID: -279282474360158478}
   - component: {fileID: 2882885729567249970}
+  - component: {fileID: 6750686966662331186}
   m_Layer: 0
   m_Name: Unit_Archor
   m_TagString: Player
@@ -189,3 +190,25 @@ MonoBehaviour:
   IsAttack: 0
   _curPos_X: -1
   _curPos_Y: -1
+  _opponentInfo: []
+--- !u!95 &6750686966662331186
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5361771991443148924}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e5dbfcb36d60f6d4698053a007adc043, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

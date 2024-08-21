@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6543867319336646356}
   - component: {fileID: 7844043374491529887}
   - component: {fileID: 7115287285002330371}
+  - component: {fileID: 5442336022986131088}
   m_Layer: 0
   m_Name: Enemy_Warrior
   m_TagString: Enemy
@@ -189,3 +190,25 @@ MonoBehaviour:
   IsAttack: 0
   _curPos_X: -1
   _curPos_Y: -1
+  _opponentInfo: []
+--- !u!95 &5442336022986131088
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8185234891370330098}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c64b8ae93ed214f4d963e707040395d7, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
