@@ -715,6 +715,9 @@ MonoBehaviour:
   EnemyList: []
   Enemy: []
   Player: []
+  IsGameStart: 0
+  isPCheck: 0
+  isECheck: 0
 --- !u!4 &1011635989
 Transform:
   m_ObjectHideFlags: 0
