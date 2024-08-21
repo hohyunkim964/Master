@@ -9,11 +9,13 @@ public class GameSystem : MonoBehaviour
     public GameObject[] Player;
     public bool IsGameStart = false;
     public bool IsGameTurnEnd = false;
+    public bool IsGameEnd = false;
     public bool isPCheck = false;
     public bool isECheck = false;
     private int _PlayerCount = 0;
     private int _EnemyCount = 0;
-    private float _time = 0.0f;
+    private float _turnTime = 0.0f;
+    private float _GameTime = 0.0f;
 
     private void Awake()
     {
@@ -54,22 +56,33 @@ public class GameSystem : MonoBehaviour
         }
         else
         {
-            if (!IsGameTurnEnd)
+            if (_GameTime < 60f)
             {
-                if (_time < 1.0f)
+                _GameTime += Time.deltaTime;
+
+                if (!IsGameTurnEnd)
                 {
-                    _time += Time.deltaTime;
+                    if (_turnTime < 1.0f)
+                    {
+                        _turnTime += Time.deltaTime;
+                    }
+                    else
+                    {
+                        _turnTime = 0.0f;
+                    }
+
+                    IsGameTurnEnd = true;
                 }
                 else
                 {
-                    _time = 0.0f;
+                    IsGameTurnEnd = false;
                 }
-
-                IsGameTurnEnd = true;
             }
             else
             {
-                IsGameTurnEnd = false;
+                IsGameStart = false;
+                IsGameEnd = true;
+                _GameTime = 0.0f;
             }
         }
     }

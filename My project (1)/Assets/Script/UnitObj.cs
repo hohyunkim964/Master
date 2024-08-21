@@ -19,6 +19,14 @@ public class UnitObj : MonoBehaviour
         None,
     }
 
+    public enum UnitBehavior
+    {
+        Idle,
+        Attack,
+        Move,
+    }
+
+    public UnitBehavior UnitBe = UnitBehavior.Idle;
     public Unit UnitJob = Unit.People;
     public UnitState State = UnitState.None;
     public bool IsAttack = false;
@@ -84,9 +92,23 @@ public class UnitObj : MonoBehaviour
         {
             if (!_isDie)
             {
-
                 _AttackRangeChk();
-                                         
+                if (_gameSystem.IsGameTurnEnd)
+                {
+                    UnitBe = UnitBehavior.Idle;
+                }
+                else
+                {
+                    switch (State)
+                    {
+                        case UnitState.Player:
+                            UnitBe = UnitBehavior.Move;
+                            break;
+                        case UnitState.Enemy:
+                            UnitBe = UnitBehavior.Idle;
+                            break;
+                    }
+                }                
             }
             else
             {
@@ -128,43 +150,31 @@ public class UnitObj : MonoBehaviour
     }
     
     public void ChangePattern()
-    {
-        if (_corCoutine != null)
+    {     
+        if (!_gameSystem.IsGameTurnEnd)
         {
-            StopCoroutine(_corCoutine);
-        }
-
-        /*
-        if (!_isDie)
-        {
-            _AttackRangeChk();
-            if (IsAttack && ContactOpponent != null)
+            if (_corCoutine != null)
             {
-               _corCoutine = StartCoroutine(_Attack());
-                //공격
-                //     _Attack();
+                StopCoroutine(_corCoutine);
             }
-            else
+
+            switch (UnitBe)
             {
-                //이동
-                if (State == UnitState.Player)
-                {
-                    _Astar();
-                }
-                else
-                {
-                    //Idle 애님 호출
-                }
+                case UnitBehavior.Idle:
+                    _corCoutine = StartCoroutine(_Idle());
+                    break;
+                case UnitBehavior.Attack:
+                    _corCoutine = StartCoroutine(_Attack());
+                    break;
+                case UnitBehavior.Move:
+
+                    break;
             }
         }
         else
         {
-            if (_spriteRenderer.enabled)
-            {
-                _spriteRenderer.enabled = false;
-            }
+            ChangePattern();
         }
-        */
     }
       
     private void _Astar()
@@ -267,6 +277,8 @@ public class UnitObj : MonoBehaviour
 
                                     if (IsAttack)
                                     {
+                                        if (!_gameSystem.IsGameTurnEnd)
+                                            UnitBe = UnitBehavior.Attack;
                                         break;
                                     }
                                 }
@@ -306,10 +318,12 @@ public class UnitObj : MonoBehaviour
 
                                     if (IsAttack)
                                     {
+                                        if (!_gameSystem.IsGameTurnEnd)
+                                            UnitBe = UnitBehavior.Attack;
                                         break;
                                     }
                                 }
-                            }
+                            }  
                             break;
                         default:
                             break;
@@ -351,6 +365,8 @@ public class UnitObj : MonoBehaviour
 
                                     if (IsAttack)
                                     {
+                                        if (!_gameSystem.IsGameTurnEnd)
+                                            UnitBe = UnitBehavior.Attack;
                                         break;
                                     }
                                 }
@@ -390,6 +406,8 @@ public class UnitObj : MonoBehaviour
 
                                     if (IsAttack)
                                     {
+                                        if (!_gameSystem.IsGameTurnEnd)
+                                            UnitBe = UnitBehavior.Attack;
                                         break;
                                     }
                                 }
@@ -409,7 +427,6 @@ public class UnitObj : MonoBehaviour
     {
         while (!_gameSystem.IsGameTurnEnd)
         {
-            _time += Time.deltaTime;
             switch (UnitJob)
             {
                 //근거리 8방향중 한곳으로 공격
@@ -521,7 +538,6 @@ public class UnitObj : MonoBehaviour
                 default:
                     break;
             }
-
             yield return null;
         }
 
@@ -554,7 +570,8 @@ public class UnitObj : MonoBehaviour
             default:
                 break;
         }
-        
+
+        UnitBe = UnitBehavior.Idle;
         ChangePattern();
     }
 
@@ -576,6 +593,7 @@ public class UnitObj : MonoBehaviour
 
             yield return null;
         }
+
         ChangePattern();
     }
 }
