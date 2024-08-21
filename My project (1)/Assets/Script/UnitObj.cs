@@ -407,9 +407,7 @@ public class UnitObj : MonoBehaviour
 
     private IEnumerator _Attack()
     {
-        _time = 0.0f;
-
-        while (_time < 1.0f)
+        while (!_gameSystem.IsGameTurnEnd)
         {
             _time += Time.deltaTime;
             switch (UnitJob)
@@ -447,7 +445,7 @@ public class UnitObj : MonoBehaviour
                         if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Adventurer_Attack"))
                         {
                             _animator.SetBool("Attack", true);
-                        }                      
+                        }
                     }
 
                     break;
@@ -540,7 +538,7 @@ public class UnitObj : MonoBehaviour
                 break;
             case Unit.Warrior:
                 if (_contactEnemyList.Count > 0)
-                {           
+                {
                     for (int i = _contactEnemyList.Count - 1; i >= 0; i--)
                     {
                         _contactEnemyList[i]._hp -= 5f;
@@ -552,22 +550,18 @@ public class UnitObj : MonoBehaviour
                         }
                     }
                 }
-                break;            
+                break;
             default:
                 break;
         }
-
+        
         ChangePattern();
     }
 
     private IEnumerator _Idle()
     {
-        _time = 0.0f;
-
-        while (_time < 1.0f)
+        while (!_gameSystem.IsGameTurnEnd)
         {
-            _time += Time.deltaTime;
-
             if (_animator.GetBool("Attack"))
             {
                 _animator.SetBool("Attack", false);

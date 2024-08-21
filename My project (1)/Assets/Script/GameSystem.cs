@@ -13,7 +13,7 @@ public class GameSystem : MonoBehaviour
     public bool isECheck = false;
     private int _PlayerCount = 0;
     private int _EnemyCount = 0;
-
+    private float _time = 0.0f;
 
     private void Awake()
     {
@@ -55,8 +55,16 @@ public class GameSystem : MonoBehaviour
         else
         {
             if (!IsGameTurnEnd)
-            {              
-                //1√  ¥Î±‚?
+            {
+                if (_time < 1.0f)
+                {
+                    _time += Time.deltaTime;
+                }
+                else
+                {
+                    _time = 0.0f;
+                }
+
                 IsGameTurnEnd = true;
             }
             else
