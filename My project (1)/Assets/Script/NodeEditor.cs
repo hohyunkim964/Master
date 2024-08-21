@@ -13,6 +13,16 @@ public class NodeEditor : MonoBehaviour
         return isStay;
     }
 
+    public short GetNodeCountX()
+    {
+        return X_Pos;
+    }
+
+    public short GetNodeCountY()
+    {
+        return Y_Pos;
+    }
+
     public void SetIsStayCheck(bool _isCurrent)
     {
         isStay = _isCurrent;

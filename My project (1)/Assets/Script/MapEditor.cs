@@ -9,10 +9,10 @@ public class MapEditor : MonoBehaviour
     public GameObject Tile = null;
     public List<GameObject> TileMap = new List<GameObject>();
 
-    private float minus_y = 0;
-    private float plus_y = 0;
-    private float line_y = 0;
-    private short input_x = 0;
+    private float _minus_Y = 0;
+    private float _plus_Y = 0;
+    private float _line_Y = 0;
+    private short _input_X = 0;
 
     private void Awake()
     {
@@ -35,52 +35,52 @@ public class MapEditor : MonoBehaviour
             {
                 if (i % 2 != 0 && i != 0)
                 {
-                    plus_y += 1;
-                    line_y = plus_y;
+                    _plus_Y += 1;
+                    _line_Y = _plus_Y;
                 }
                 else if (i % 2 == 0 && i != 0)
                 {
-                    minus_y -= 1;
-                    line_y = minus_y;
+                    _minus_Y -= 1;
+                    _line_Y = _minus_Y;
                 }
                 else
                 {
-                    line_y = 0;
+                    _line_Y = 0;
                 }
                             
                 for (int j = 0; j < X_Horizontal; j++)
                 {
                    GameObject a = Instantiate(Tile, this.gameObject.transform);
-                    a.transform.position = new Vector2( -(X_Horizontal / 2) + j, line_y);
+                    a.transform.position = new Vector2( -(X_Horizontal / 2) + j, _line_Y);
                    
-                    switch (line_y)
+                    switch (_line_Y)
                     {
                         case 2:
                             a.GetComponent<NodeEditor>().SetIsStayCheck(false);
-                            a.GetComponent<NodeEditor>().SetNodeCount(input_x, 0);
+                            a.GetComponent<NodeEditor>().SetNodeCount(_input_X, 0);
                             break;
                         case 1:
                             a.GetComponent<NodeEditor>().SetIsStayCheck(false);
-                            a.GetComponent<NodeEditor>().SetNodeCount(input_x, 1);
+                            a.GetComponent<NodeEditor>().SetNodeCount(_input_X, 1);
                             break;
                         case 0:
                             a.GetComponent<NodeEditor>().SetIsStayCheck(false);
-                            a.GetComponent<NodeEditor>().SetNodeCount(input_x, 2);
+                            a.GetComponent<NodeEditor>().SetNodeCount(_input_X, 2);
                             break;
                         case -1:
                             a.GetComponent<NodeEditor>().SetIsStayCheck(false);
-                            a.GetComponent<NodeEditor>().SetNodeCount(input_x, 3);
+                            a.GetComponent<NodeEditor>().SetNodeCount(_input_X, 3);
                             break;
                         case -2:
                             a.GetComponent<NodeEditor>().SetIsStayCheck(false);
-                            a.GetComponent<NodeEditor>().SetNodeCount(input_x, 4);
+                            a.GetComponent<NodeEditor>().SetNodeCount(_input_X, 4);
                             break;
                     }
 
-                    input_x += 1;
+                    _input_X += 1;
                     TileMap.Add(a);
                 }
-                input_x = 0;
+                _input_X = 0;
             }
         }
     }
