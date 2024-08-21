@@ -26,17 +26,18 @@ public class UnitObj : MonoBehaviour
 
     [SerializeField] private short _curPos_X = -1;
     [SerializeField] private short _curPos_Y = -1;
-    private Coroutine _corCoutine;
-    private Rigidbody2D _rb2d;
+    [SerializeField] private float _hp = 0;
+
     private GameSystem _gameSystem;
     private SpriteRenderer _spriteRenderer = null;
-    private bool _isDie = false;
-    private float _hp = 0;
-    private Animator _animator;
     private UnitObj _contactEnemy = null; //한 방향 공격시 피격되는 적
     private List<UnitObj> _contactEnemyList = new List<UnitObj>(); //다중 공격시 피격되는 적
     private List<UnitObj> _opponentInfo = new List<UnitObj>();
-
+    private Coroutine _corCoutine;
+    private Rigidbody2D _rb2d;
+    private Animator _animator;
+    private bool _isDie = false;
+    private float _time = 0.0f;
     private void Awake()
     {
         _rb2d = GetComponent<Rigidbody2D>();
@@ -85,16 +86,7 @@ public class UnitObj : MonoBehaviour
             {
 
                 _AttackRangeChk();
-                if (IsAttack && ContactOpponent != null)
-                {
-                    //공격
-               //     _Attack();
-                }
-                else
-                {                 
-                    //이동
-                    _Astar();
-                }
+                                         
             }
             else
             {
@@ -142,20 +134,37 @@ public class UnitObj : MonoBehaviour
             StopCoroutine(_corCoutine);
         }
 
-        switch (UnitJob)
+        /*
+        if (!_isDie)
         {
-            case Unit.Adventurer:
-                //근처에 적이 있는지 유무 확인
-                break;
-            case Unit.Warrior:
-                //근처에 적이 있는지 유무 확인
-                break;
-            case Unit.Archor:
-                //근처에 적이 있는지 유무 확인
-                break;
-            default:
-                break;
+            _AttackRangeChk();
+            if (IsAttack && ContactOpponent != null)
+            {
+               _corCoutine = StartCoroutine(_Attack());
+                //공격
+                //     _Attack();
+            }
+            else
+            {
+                //이동
+                if (State == UnitState.Player)
+                {
+                    _Astar();
+                }
+                else
+                {
+                    //Idle 애님 호출
+                }
+            }
         }
+        else
+        {
+            if (_spriteRenderer.enabled)
+            {
+                _spriteRenderer.enabled = false;
+            }
+        }
+        */
     }
       
     private void _Astar()
@@ -396,87 +405,142 @@ public class UnitObj : MonoBehaviour
         }
     }
 
-    private void _Attack()
+    private IEnumerator _Attack()
     {
+        _time = 0.0f;
+
+        while (_time < 1.0f)
+        {
+            _time += Time.deltaTime;
+            switch (UnitJob)
+            {
+                //근거리 8방향중 한곳으로 공격
+                case Unit.Adventurer:
+                    if (_contactEnemy == null)
+                    {
+                        for (int i = 0; i < _opponentInfo.Count; i++)
+                        {
+                            // 상하
+                            if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_Y == _curPos_Y
+                               && (_opponentInfo[i]._curPos_X == _curPos_X + 1 || _opponentInfo[i]._curPos_X == _curPos_X - 1))
+                            {
+                                _contactEnemy = _opponentInfo[i];
+                                break;
+                            }
+                            else if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_X == _curPos_X
+                                && (_opponentInfo[i]._curPos_Y == _curPos_Y + 1 || _opponentInfo[i]._curPos_Y == _curPos_Y - 1))
+                            {
+                                _contactEnemy = _opponentInfo[i];
+                                break;
+                            }
+                            else if (!_opponentInfo[i]._isDie && (_opponentInfo[i]._curPos_X == _curPos_X + 1 || _opponentInfo[i]._curPos_X == _curPos_X - 1)
+                                && (_opponentInfo[i]._curPos_Y == _curPos_Y + 1 || _opponentInfo[i]._curPos_Y == _curPos_Y - 1))
+                            {
+                                _contactEnemy = _opponentInfo[i];
+                                break;
+                            }
+                        }
+                    }
+
+                    if (_contactEnemy != null)
+                    {
+                        if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Adventurer_Attack"))
+                        {
+                            _animator.SetBool("Attack", true);
+                        }                      
+                    }
+
+                    break;
+                //근거리 8방향 전부 공격
+                case Unit.Warrior:
+                    if (_contactEnemyList.Count <= 0)
+                    {
+                        for (int i = 0; i < _opponentInfo.Count; i++)
+                        {
+                            // 상하
+                            if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_Y == _curPos_Y
+                               && (_opponentInfo[i]._curPos_X == _curPos_X + 1 || _opponentInfo[i]._curPos_X == _curPos_X - 1))
+                            {
+                                _contactEnemyList.Add(_opponentInfo[i]);
+                            }
+                            if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_X == _curPos_X
+                                && (_opponentInfo[i]._curPos_Y == _curPos_Y + 1 || _opponentInfo[i]._curPos_Y == _curPos_Y - 1))
+                            {
+                                _contactEnemyList.Add(_opponentInfo[i]);
+                            }
+                            if (!_opponentInfo[i]._isDie && (_opponentInfo[i]._curPos_X == _curPos_X + 1 || _opponentInfo[i]._curPos_X == _curPos_X - 1)
+                                && (_opponentInfo[i]._curPos_Y == _curPos_Y + 1 || _opponentInfo[i]._curPos_Y == _curPos_Y - 1))
+                            {
+                                _contactEnemyList.Add(_opponentInfo[i]);
+                            }
+                        }
+                    }
+                    if (_contactEnemyList.Count > 0)
+                    {
+                        if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Warrior_Attack"))
+                        {
+                            _animator.SetBool("Attack", true);
+                        }
+                    }
+                    break;
+                //원거리 8방향에서 한곳으로 공격
+                case Unit.Archor:
+                    if (_contactEnemy == null)
+                    {
+                        for (int i = 0; i < _opponentInfo.Count; i++)
+                        {
+                            // 상하
+                            if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_Y == _curPos_Y
+                               && (_opponentInfo[i]._curPos_X <= _curPos_X + 3 && _opponentInfo[i]._curPos_X >= _curPos_X - 3))
+                            {
+                                _contactEnemy = _opponentInfo[i];
+                                break;
+                            }
+                            else if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_X == _curPos_X
+                                && (_opponentInfo[i]._curPos_Y <= _curPos_Y + 3 && _opponentInfo[i]._curPos_Y >= _curPos_Y - 3))
+                            {
+                                _contactEnemy = _opponentInfo[i];
+                                break;
+                            }
+                            else if (!_opponentInfo[i]._isDie &&
+                                (_opponentInfo[i]._curPos_X <= _curPos_X + 2 && _opponentInfo[i]._curPos_X >= _curPos_X - 2 && _opponentInfo[i]._curPos_Y <= _curPos_Y + 1 && _opponentInfo[i]._curPos_Y >= _curPos_Y - 1)
+                               || (_opponentInfo[i]._curPos_X <= _curPos_X + 1 && _opponentInfo[i]._curPos_X >= _curPos_X - 1 && _opponentInfo[i]._curPos_Y <= _curPos_Y + 2 && _opponentInfo[i]._curPos_Y >= _curPos_Y - 2))
+                            {
+                                _contactEnemy = _opponentInfo[i];
+                                break;
+                            }
+                        }
+                    }
+
+                    if (_contactEnemy != null)
+                    {
+                        if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Archor_Attack"))
+                        {
+                            _animator.SetBool("Attack", true);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            yield return null;
+        }
+
         switch (UnitJob)
         {
-            //근거리 8방향중 한곳으로 공격
             case Unit.Adventurer:
-                if (_contactEnemy == null)
+            case Unit.Archor:
+                _contactEnemy._hp -= 5f;
+                if (_contactEnemy._hp <= 0)
                 {
-                    for (int i = 0; i < _opponentInfo.Count; i++)
-                    {
-                        // 상하
-                        if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_Y == _curPos_Y
-                           && (_opponentInfo[i]._curPos_X == _curPos_X + 1 || _opponentInfo[i]._curPos_X == _curPos_X - 1))
-                        {
-                            _contactEnemy = _opponentInfo[i];
-                            break;
-                        }
-                        else if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_X == _curPos_X
-                            && (_opponentInfo[i]._curPos_Y == _curPos_Y + 1 || _opponentInfo[i]._curPos_Y == _curPos_Y - 1))
-                        {
-                            _contactEnemy = _opponentInfo[i];
-                            break;
-                        }
-                        else if (!_opponentInfo[i]._isDie && (_opponentInfo[i]._curPos_X == _curPos_X + 1 || _opponentInfo[i]._curPos_X == _curPos_X - 1)
-                            && (_opponentInfo[i]._curPos_Y == _curPos_Y + 1 || _opponentInfo[i]._curPos_Y == _curPos_Y - 1))
-                        {
-                            _contactEnemy = _opponentInfo[i];
-                            break;
-                        }
-                    }
+                    _contactEnemy._isDie = true;
+                    _contactEnemy = null;
                 }
-
-                if (_contactEnemy != null)
-                {
-                    if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Adventurer_Attack"))
-                    {
-                        _animator.SetBool("Attack", true);
-                    }
-
-                    _contactEnemy._hp -= 5f;
-
-                    if (_contactEnemy._hp <= 0)
-                    {
-                        _contactEnemy._isDie = true;
-                        _contactEnemy = null;
-                    }
-                }
-
                 break;
-            //근거리 8방향 전부 공격
             case Unit.Warrior:
-                if (_contactEnemyList.Count <= 0)
-                {
-                    for (int i = 0; i < _opponentInfo.Count; i++)
-                    {
-                        // 상하
-                        if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_Y == _curPos_Y
-                           && (_opponentInfo[i]._curPos_X == _curPos_X + 1 || _opponentInfo[i]._curPos_X == _curPos_X - 1))
-                        {
-                            _contactEnemyList.Add(_opponentInfo[i]);
-                        }
-                        if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_X == _curPos_X
-                            && (_opponentInfo[i]._curPos_Y == _curPos_Y + 1 || _opponentInfo[i]._curPos_Y == _curPos_Y - 1))
-                        {
-                            _contactEnemyList.Add(_opponentInfo[i]);
-                        }
-                        if (!_opponentInfo[i]._isDie && (_opponentInfo[i]._curPos_X == _curPos_X + 1 || _opponentInfo[i]._curPos_X == _curPos_X - 1)
-                            && (_opponentInfo[i]._curPos_Y == _curPos_Y + 1 || _opponentInfo[i]._curPos_Y == _curPos_Y - 1))
-                        {
-                            _contactEnemyList.Add(_opponentInfo[i]);
-                        }
-                    }
-                }
-
-                if(_contactEnemyList.Count > 0)
-                {
-                    if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Warrior_Attack"))
-                    {
-                        _animator.SetBool("Attack", true);
-                    }
-
+                if (_contactEnemyList.Count > 0)
+                {           
                     for (int i = _contactEnemyList.Count - 1; i >= 0; i--)
                     {
                         _contactEnemyList[i]._hp -= 5f;
@@ -488,56 +552,36 @@ public class UnitObj : MonoBehaviour
                         }
                     }
                 }
-
-               
-                break;
-            //원거리 8방향에서 한곳으로 공격
-            case Unit.Archor:
-                if (_contactEnemy == null)
-                {
-                    for (int i = 0; i < _opponentInfo.Count; i++)
-                    {
-                        // 상하
-                        if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_Y == _curPos_Y
-                           && (_opponentInfo[i]._curPos_X <= _curPos_X + 3 && _opponentInfo[i]._curPos_X >= _curPos_X - 3))
-                        {
-                            _contactEnemy = _opponentInfo[i];
-                            break;
-                        }
-                        else if (!_opponentInfo[i]._isDie && _opponentInfo[i]._curPos_X == _curPos_X
-                            && (_opponentInfo[i]._curPos_Y <= _curPos_Y + 3 && _opponentInfo[i]._curPos_Y >= _curPos_Y - 3))
-                        {
-                            _contactEnemy = _opponentInfo[i];
-                            break;
-                        }
-                        else if (!_opponentInfo[i]._isDie &&
-                            (_opponentInfo[i]._curPos_X <= _curPos_X + 2 && _opponentInfo[i]._curPos_X >= _curPos_X - 2 && _opponentInfo[i]._curPos_Y <= _curPos_Y + 1 && _opponentInfo[i]._curPos_Y >= _curPos_Y - 1)
-                           || (_opponentInfo[i]._curPos_X <= _curPos_X + 1 && _opponentInfo[i]._curPos_X >= _curPos_X - 1 && _opponentInfo[i]._curPos_Y <= _curPos_Y + 2 && _opponentInfo[i]._curPos_Y >= _curPos_Y - 2))
-                        {
-                            _contactEnemy = _opponentInfo[i];
-                            break;
-                        }
-                    }
-                }
-
-                if (_contactEnemy != null)
-                {
-                    if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Archor_Attack"))
-                    {
-                        _animator.SetBool("Attack", true);
-                    }
-
-                    _contactEnemy._hp -= 5f;
-
-                    if (_contactEnemy._hp <= 0)
-                    {
-                        _contactEnemy._isDie = true;
-                        _contactEnemy = null;
-                    }
-                }
-                break;
+                break;            
             default:
                 break;
         }
+
+        ChangePattern();
+    }
+
+    private IEnumerator _Idle()
+    {
+        _time = 0.0f;
+
+        while (_time < 1.0f)
+        {
+            _time += Time.deltaTime;
+
+            if (_animator.GetBool("Attack"))
+            {
+                _animator.SetBool("Attack", false);
+            }
+
+            if (_animator.GetBool("Move"))
+            {
+                _animator.SetBool("Move", false);
+            }
+
+            IsAttack = false;
+
+            yield return null;
+        }
+        ChangePattern();
     }
 }

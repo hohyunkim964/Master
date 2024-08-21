@@ -8,6 +8,7 @@ public class GameSystem : MonoBehaviour
     public GameObject[] Enemy;
     public GameObject[] Player;
     public bool IsGameStart = false;
+    public bool IsGameTurnEnd = false;
     public bool isPCheck = false;
     public bool isECheck = false;
     private int _PlayerCount = 0;
@@ -49,6 +50,18 @@ public class GameSystem : MonoBehaviour
             {
                 if (isECheck)
                     isECheck = false;
+            }
+        }
+        else
+        {
+            if (!IsGameTurnEnd)
+            {              
+                //1√  ¥Î±‚?
+                IsGameTurnEnd = true;
+            }
+            else
+            {
+                IsGameTurnEnd = false;
             }
         }
     }
