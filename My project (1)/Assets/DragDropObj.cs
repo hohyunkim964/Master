@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DragDropUi : MonoBehaviour
+public class DragDropObj : MonoBehaviour
 {
     public GameSystem GameSystem = null;
 
@@ -21,7 +21,7 @@ public class DragDropUi : MonoBehaviour
 
     private void Update()
     {
-        if (!GameSystem.IsGameStart)
+        if (!GameSystem.IsGameStart && !GameSystem.IsGameEnd)
         {
             _Pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -53,7 +53,7 @@ public class DragDropUi : MonoBehaviour
                 }
             }
         }
-        if (Input.GetMouseButtonUp(0) && !GameSystem.IsGameStart)
+        if (Input.GetMouseButtonUp(0) && !GameSystem.IsGameStart && !GameSystem.IsGameEnd)
         {
             isClick = false;
         }
