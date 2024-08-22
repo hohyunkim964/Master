@@ -58,4 +58,20 @@ public class DragDropUi : MonoBehaviour
             isClick = false;
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!isClick && collision.gameObject.CompareTag("UI"))
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (!isClick && collision.gameObject.CompareTag("UI"))
+        {
+            Destroy(this.gameObject);
+        }
+    }
 }
