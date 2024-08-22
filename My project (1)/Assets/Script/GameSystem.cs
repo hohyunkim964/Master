@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameSystem : MonoBehaviour
 {
+    public UIManager Uimanager = null;
     public List<GameObject> EnemyList = new List<GameObject>();
     public GameObject[] Enemy;
     public GameObject[] Player;
@@ -12,28 +13,35 @@ public class GameSystem : MonoBehaviour
     public bool IsGameEnd = false;
     public bool isPCheck = false;
     public bool isECheck = false;
-    private int _PlayerCount = 0;
-    private int _EnemyCount = 0;
+
+    public int PlayerCount = 0;
+    public int EnemyCount = 0;
+
     private float _turnTime = 0.0f;
     private float _GameTime = 0.0f;
 
     private void Awake()
     {
+        if (Uimanager != null)
+        {
+            Uimanager = GameObject.Find("UImanager").GetComponent<UIManager>();
+        }
+
         Player = GameObject.FindGameObjectsWithTag("Player");
         Enemy = GameObject.FindGameObjectsWithTag("Enemy");
-   
-        _PlayerCount = Player.Length;
-        _EnemyCount = Enemy.Length;
+
+        PlayerCount = Player.Length;
+        EnemyCount = Enemy.Length;
     }
 
     public void Update()
     {
-        if (!IsGameStart)
+        if (!IsGameStart && !IsGameEnd)
         {
-            if (GameObject.FindGameObjectsWithTag("Player").Length != _PlayerCount)
+            if (GameObject.FindGameObjectsWithTag("Player").Length != PlayerCount)
             {
                 Player = GameObject.FindGameObjectsWithTag("Player");
-                _PlayerCount = Player.Length;
+                PlayerCount = Player.Length;
                 isPCheck = true;
             }
             else
@@ -42,10 +50,10 @@ public class GameSystem : MonoBehaviour
                     isPCheck = false;
             }
 
-            if (GameObject.FindGameObjectsWithTag("Enemy").Length != _EnemyCount)
+            if (GameObject.FindGameObjectsWithTag("Enemy").Length != EnemyCount)
             {
                 Enemy = GameObject.FindGameObjectsWithTag("Enemy");
-                _EnemyCount = Enemy.Length;
+                EnemyCount = Enemy.Length;
                 isECheck = true;
             }
             else
@@ -54,7 +62,7 @@ public class GameSystem : MonoBehaviour
                     isECheck = false;
             }
         }
-        else
+        else if(IsGameStart && !IsGameEnd)
         {
             if (_GameTime < 60f)
             {
@@ -85,5 +93,51 @@ public class GameSystem : MonoBehaviour
                 _GameTime = 0.0f;
             }
         }
+    }
+
+    public void StartAction()
+    {
+        _turnTime = 0.0f;
+        _GameTime = 0.0f;
+        IsGameEnd = false;
+        IsGameStart = true;      
+    }
+
+    public void EndGame()
+    {
+        if (_GameTime < 60)
+        {        
+            IsGameEnd = true;
+            IsGameStart = false;
+            _GameTime = 0.0f;
+        }
+
+        if (EnemyCount > PlayerCount)
+        {
+            _Lose();
+        }
+        else if (EnemyCount < PlayerCount)
+        {
+            _Win();
+        }
+        else
+        {
+            _Draw();
+        }
+    }
+
+    private void _Win()
+    {
+
+    }
+
+    private void _Lose()
+    {
+
+    }
+
+    private void _Draw()
+    {
+
     }
 }

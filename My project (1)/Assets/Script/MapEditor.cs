@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class MapEditor : MonoBehaviour
 {
-    public int X_Horizontal = 0;
-    public int Y_Vertical = 0;
+
     public GameObject Tile = null;
     public List<GameObject> TileMap = new List<GameObject>();
-
+    public int X_Horizontal = 0;
+    public int Y_Vertical = 0;
+    
     private float _minus_Y = 0;
     private float _plus_Y = 0;
     private float _line_Y = 0;
     private short _input_X = 0;
-
+    
     private void Awake()
     {
         _BaseInit();
@@ -84,5 +85,4 @@ public class MapEditor : MonoBehaviour
             }
         }
     }
-
 }

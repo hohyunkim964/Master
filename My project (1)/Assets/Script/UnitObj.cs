@@ -80,7 +80,7 @@ public class UnitObj : MonoBehaviour
 
     private void Update()
     {
-        if (!_gameSystem.IsGameStart)
+        if (!_gameSystem.IsGameStart && !_gameSystem.IsGameEnd)
         {
             if (!_spriteRenderer.enabled)
             {
@@ -88,7 +88,7 @@ public class UnitObj : MonoBehaviour
             }
             CheckOpponentCount();
         }
-        else
+        else if (_gameSystem.IsGameStart && !_gameSystem.IsGameEnd)
         {
             if (!_isDie)
             {
@@ -108,7 +108,7 @@ public class UnitObj : MonoBehaviour
                             UnitBe = UnitBehavior.Idle;
                             break;
                     }
-                }                
+                }
             }
             else
             {
@@ -550,6 +550,32 @@ public class UnitObj : MonoBehaviour
                 {
                     _contactEnemy._isDie = true;
                     _contactEnemy = null;
+
+                    switch (State)
+                    {
+                        case UnitState.Enemy:
+                            if (_gameSystem.PlayerCount > 0)
+                            {
+                                _gameSystem.PlayerCount -= 1;
+                            }
+                            else
+                            {
+                                _gameSystem.EndGame();
+                            }
+                            break;
+                        case UnitState.Player:
+                            if (_gameSystem.EnemyCount > 0)
+                            {
+                                _gameSystem.EnemyCount -= 1;
+                            }
+                            else
+                            {                
+                                _gameSystem.EndGame();
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 break;
             case Unit.Warrior:
