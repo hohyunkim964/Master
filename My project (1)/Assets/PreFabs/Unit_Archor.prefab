@@ -15,7 +15,8 @@ GameObject:
   - component: {fileID: -279282474360158478}
   - component: {fileID: 2882885729567249970}
   - component: {fileID: 6750686966662331186}
-  m_Layer: 0
+  - component: {fileID: 2264491435906550253}
+  m_Layer: 3
   m_Name: Unit_Archor
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -185,12 +186,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e2c7a3796332584d92f069f787fd295, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UnitBe: 0
   UnitJob: 2
   State: 0
   IsAttack: 0
+  ContactOpponent: {fileID: 0}
   _curPos_X: -1
   _curPos_Y: -1
-  _opponentInfo: []
+  _hp: 0
 --- !u!95 &6750686966662331186
 Animator:
   serializedVersion: 5
@@ -212,3 +215,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2264491435906550253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5361771991443148924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9440b38c9cc681b43a0b8672662e5cd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GameSystem: {fileID: 0}

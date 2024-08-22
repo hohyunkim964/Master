@@ -189,7 +189,7 @@ public class UnitObj : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.gameObject.TryGetComponent(out NodeEditor tile))
+        if (_gameSystem.IsGameStart && col.gameObject.TryGetComponent(out NodeEditor tile))
         {
             if (!tile.GetIsStayCheck())
             {
@@ -205,7 +205,7 @@ public class UnitObj : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D col)
     {
-        if (col.gameObject.TryGetComponent(out NodeEditor tile))
+        if (_gameSystem.IsGameStart && col.gameObject.TryGetComponent(out NodeEditor tile))
         {
             if (!tile.GetIsStayCheck())
             {
@@ -221,7 +221,7 @@ public class UnitObj : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent(out NodeEditor tile))
+        if (_gameSystem.IsGameStart && collision.gameObject.TryGetComponent(out NodeEditor tile))
         {
             if (tile.GetIsStayCheck())
             {

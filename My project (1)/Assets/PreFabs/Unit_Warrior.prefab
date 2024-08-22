@@ -15,7 +15,8 @@ GameObject:
   - component: {fileID: -796660127869363374}
   - component: {fileID: -8264052440869281163}
   - component: {fileID: 5373222273143970530}
-  m_Layer: 0
+  - component: {fileID: -7610964973436990975}
+  m_Layer: 3
   m_Name: Unit_Warrior
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -185,12 +186,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e2c7a3796332584d92f069f787fd295, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UnitBe: 0
   UnitJob: 1
   State: 0
   IsAttack: 0
+  ContactOpponent: {fileID: 0}
   _curPos_X: -1
   _curPos_Y: -1
-  _opponentInfo: []
+  _hp: 0
 --- !u!95 &5373222273143970530
 Animator:
   serializedVersion: 5
@@ -212,3 +215,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-7610964973436990975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5427526060171683132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9440b38c9cc681b43a0b8672662e5cd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GameSystem: {fileID: 0}

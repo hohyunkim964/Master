@@ -16,7 +16,8 @@ GameObject:
   - component: {fileID: 2323052302590684347}
   - component: {fileID: -216580580830605960}
   - component: {fileID: 4660963694980861038}
-  m_Layer: 0
+  - component: {fileID: 1856811724280165856}
+  m_Layer: 3
   m_Name: Unit_Adventurer
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -78,7 +79,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0.53, y: 0.47, z: 0.44, w: 0.5}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.5, y: 1.5}
+    oldSize: {x: 0.56, y: 0.56}
     newSize: {x: 1.5, y: 1.5}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -159,12 +160,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e2c7a3796332584d92f069f787fd295, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UnitBe: 0
   UnitJob: 3
   State: 2
   IsAttack: 0
+  ContactOpponent: {fileID: 0}
   _curPos_X: -1
   _curPos_Y: -1
-  _opponentInfo: []
+  _hp: 0
 --- !u!50 &2323052302590684347
 Rigidbody2D:
   serializedVersion: 4
@@ -204,12 +207,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e2c7a3796332584d92f069f787fd295, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UnitBe: 0
   UnitJob: 0
   State: 0
   IsAttack: 0
+  ContactOpponent: {fileID: 0}
   _curPos_X: -1
   _curPos_Y: -1
-  _opponentInfo: []
+  _hp: 0
 --- !u!95 &4660963694980861038
 Animator:
   serializedVersion: 5
@@ -231,3 +236,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1856811724280165856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6779229924380678127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9440b38c9cc681b43a0b8672662e5cd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GameSystem: {fileID: 0}
