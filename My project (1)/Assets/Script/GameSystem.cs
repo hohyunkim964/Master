@@ -34,6 +34,14 @@ public class GameSystem : MonoBehaviour
         EnemyCount = Enemy.Length;
     }
 
+  
+    IEnumerator TimeIncrease() 
+    {
+        IsGameTurnEnd = true;
+        yield return new WaitForSecondsRealtime(1f);
+        IsGameTurnEnd = false;
+    }
+
     public void Update()
     {
         if (!IsGameStart && !IsGameEnd)
@@ -64,13 +72,13 @@ public class GameSystem : MonoBehaviour
         }
         else if(IsGameStart && !IsGameEnd)
         {
-            if (_GameTime < 60f)
+            if (_GameTime < 600f)
             {
                 _GameTime += Time.deltaTime;
 
                 if (!IsGameTurnEnd)
                 {
-                    if (_turnTime < 1.0f)
+                    if (_turnTime < 60f)
                     {
                         _turnTime += Time.deltaTime;
                     }

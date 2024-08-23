@@ -50,6 +50,7 @@ public class UnitObj : MonoBehaviour
     {
         _rb2d = GetComponent<Rigidbody2D>();
         _gameSystem = GameObject.Find("GameSystem").GetComponent<GameSystem>();
+        _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         if (_rb2d.bodyType != RigidbodyType2D.Kinematic)
         {
@@ -76,6 +77,8 @@ public class UnitObj : MonoBehaviour
                 _hp = 0;
                 break;
         }
+
+        ChangePattern();
     }
 
     private void Update()
@@ -102,10 +105,24 @@ public class UnitObj : MonoBehaviour
                     switch (State)
                     {
                         case UnitState.Player:
-                            UnitBe = UnitBehavior.Move;
+                            if (!IsAttack)
+                            {
+                                UnitBe = UnitBehavior.Move;
+                            }
+                            else 
+                            {
+                                UnitBe = UnitBehavior.Attack;
+                            }
                             break;
                         case UnitState.Enemy:
-                            UnitBe = UnitBehavior.Idle;
+                            if (!IsAttack)
+                            {
+                                UnitBe = UnitBehavior.Idle;
+                            }
+                            else 
+                            {
+                                UnitBe = UnitBehavior.Attack;
+                            }
                             break;
                     }
                 }
@@ -151,8 +168,8 @@ public class UnitObj : MonoBehaviour
     
     public void ChangePattern()
     {     
-        if (!_gameSystem.IsGameTurnEnd)
-        {
+       // if (!_gameSystem.IsGameTurnEnd)
+       // {
             if (_corCoutine != null)
             {
                 StopCoroutine(_corCoutine);
@@ -170,11 +187,11 @@ public class UnitObj : MonoBehaviour
 
                     break;
             }
-        }
-        else
-        {
-            ChangePattern();
-        }
+     //   }
+     //   else
+     //   {
+     //       ChangePattern();
+     //   }
     }
       
     private void _Astar()
@@ -189,7 +206,7 @@ public class UnitObj : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (_gameSystem.IsGameStart && col.gameObject.TryGetComponent(out NodeEditor tile))
+        if (!_gameSystem.IsGameEnd && col.gameObject.TryGetComponent(out NodeEditor tile))
         {
             if (!tile.GetIsStayCheck())
             {
@@ -205,8 +222,10 @@ public class UnitObj : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D col)
     {
-        if (_gameSystem.IsGameStart && col.gameObject.TryGetComponent(out NodeEditor tile))
+        if (!_gameSystem.IsGameEnd && col.gameObject.TryGetComponent(out NodeEditor tile))
         {
+            Debug.Log(_curPos_X);
+
             if (!tile.GetIsStayCheck())
             {
                 tile.SetIsStayCheck(true);
@@ -277,8 +296,6 @@ public class UnitObj : MonoBehaviour
 
                                     if (IsAttack)
                                     {
-                                        if (!_gameSystem.IsGameTurnEnd)
-                                            UnitBe = UnitBehavior.Attack;
                                         break;
                                     }
                                 }
@@ -318,8 +335,6 @@ public class UnitObj : MonoBehaviour
 
                                     if (IsAttack)
                                     {
-                                        if (!_gameSystem.IsGameTurnEnd)
-                                            UnitBe = UnitBehavior.Attack;
                                         break;
                                     }
                                 }
@@ -365,8 +380,6 @@ public class UnitObj : MonoBehaviour
 
                                     if (IsAttack)
                                     {
-                                        if (!_gameSystem.IsGameTurnEnd)
-                                            UnitBe = UnitBehavior.Attack;
                                         break;
                                     }
                                 }
@@ -406,8 +419,6 @@ public class UnitObj : MonoBehaviour
 
                                     if (IsAttack)
                                     {
-                                        if (!_gameSystem.IsGameTurnEnd)
-                                            UnitBe = UnitBehavior.Attack;
                                         break;
                                     }
                                 }
@@ -459,7 +470,7 @@ public class UnitObj : MonoBehaviour
 
                     if (_contactEnemy != null)
                     {
-                        if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Adventurer_Attack"))
+                        if (!_animator.GetBool("Attack"))
                         {
                             _animator.SetBool("Attack", true);
                         }
@@ -492,7 +503,7 @@ public class UnitObj : MonoBehaviour
                     }
                     if (_contactEnemyList.Count > 0)
                     {
-                        if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Warrior_Attack"))
+                        if (!_animator.GetBool("Attack"))
                         {
                             _animator.SetBool("Attack", true);
                         }
@@ -529,7 +540,7 @@ public class UnitObj : MonoBehaviour
 
                     if (_contactEnemy != null)
                     {
-                        if (!_animator.GetCurrentAnimatorStateInfo(0).IsName("Archor_Attack"))
+                        if (!_animator.GetBool("Attack"))
                         {
                             _animator.SetBool("Attack", true);
                         }
@@ -596,27 +607,27 @@ public class UnitObj : MonoBehaviour
             default:
                 break;
         }
-
+     
         UnitBe = UnitBehavior.Idle;
         ChangePattern();
     }
 
     private IEnumerator _Idle()
     {
-        while (!_gameSystem.IsGameTurnEnd)
+        if (_animator.GetBool("Attack"))
         {
-            if (_animator.GetBool("Attack"))
-            {
-                _animator.SetBool("Attack", false);
-            }
+            _animator.SetBool("Attack", false);
+        }
 
-            if (_animator.GetBool("Move"))
-            {
-                _animator.SetBool("Move", false);
-            }
+        if (_animator.GetBool("Move"))
+        {
+            _animator.SetBool("Move", false);
+        }
 
-            IsAttack = false;
+        IsAttack = false;
 
+        while (UnitBe == UnitBehavior.Idle) 
+        {
             yield return null;
         }
 
