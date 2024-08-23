@@ -39,7 +39,7 @@ public class UnitObj : MonoBehaviour
     private GameSystem _gameSystem;
     private SpriteRenderer _spriteRenderer = null;
     private UnitObj _contactEnemy = null; //한 방향 공격시 피격되는 적
-    private List<UnitObj> _contactEnemyList = new List<UnitObj>(); //다중 공격시 피격되는 적
+    public List<UnitObj> _contactEnemyList = new List<UnitObj>(); //다중 공격시 피격되는 적
     private List<UnitObj> _opponentInfo = new List<UnitObj>();
     private Coroutine _corCoutine;
     private Rigidbody2D _rb2d;
@@ -167,9 +167,12 @@ public class UnitObj : MonoBehaviour
     }
     
     public void ChangePattern()
-    {     
-       // if (!_gameSystem.IsGameTurnEnd)
-       // {
+    {
+        // if (!_gameSystem.IsGameTurnEnd)
+        // {
+
+        if (!_isDie)
+        {
             if (_corCoutine != null)
             {
                 StopCoroutine(_corCoutine);
@@ -187,6 +190,7 @@ public class UnitObj : MonoBehaviour
 
                     break;
             }
+        }
      //   }
      //   else
      //   {
@@ -472,6 +476,7 @@ public class UnitObj : MonoBehaviour
                     {
                         if (!_animator.GetBool("Attack"))
                         {
+                            Debug.Log("Att");
                             _animator.SetBool("Attack", true);
                         }
                     }
@@ -505,6 +510,7 @@ public class UnitObj : MonoBehaviour
                     {
                         if (!_animator.GetBool("Attack"))
                         {
+                            Debug.Log("Att");
                             _animator.SetBool("Attack", true);
                         }
                     }
@@ -542,6 +548,7 @@ public class UnitObj : MonoBehaviour
                     {
                         if (!_animator.GetBool("Attack"))
                         {
+                            Debug.Log("Att");
                             _animator.SetBool("Attack", true);
                         }
                     }
@@ -552,22 +559,37 @@ public class UnitObj : MonoBehaviour
             yield return null;
         }
 
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        //while (_animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1) 
+        //{
+        //    
+        //}
+
         switch (UnitJob)
         {
             case Unit.Adventurer:
             case Unit.Archor:
-                _contactEnemy._hp -= 5f;
-                if (_contactEnemy._hp <= 0)
+                if (_contactEnemy != null)
                 {
-                    _contactEnemy._isDie = true;
-                    _contactEnemy = null;
-
+                    _contactEnemy._hp -= 5f;
+                    if (_contactEnemy._hp <= 0)
+                    {
+                        _contactEnemy._isDie = true;
+                        _contactEnemy = null;
+                    }
+                }
+               
+                if(_contactEnemy == null)
+                {
                     switch (State)
                     {
                         case UnitState.Enemy:
                             if (_gameSystem.PlayerCount > 0)
                             {
                                 _gameSystem.PlayerCount -= 1;
+                                UnitBe = UnitBehavior.Idle;
                             }
                             else
                             {
@@ -578,9 +600,10 @@ public class UnitObj : MonoBehaviour
                             if (_gameSystem.EnemyCount > 0)
                             {
                                 _gameSystem.EnemyCount -= 1;
+                                UnitBe = UnitBehavior.Move;
                             }
                             else
-                            {                
+                            {
                                 _gameSystem.EndGame();
                             }
                             break;
@@ -600,7 +623,59 @@ public class UnitObj : MonoBehaviour
                         {
                             _contactEnemyList[i]._isDie = true;
                             _contactEnemyList.RemoveAt(i);
+                            switch (State)
+                            {
+                                case UnitState.Enemy:
+                                    if (_gameSystem.PlayerCount > 0)
+                                    {
+                                        _gameSystem.PlayerCount -= 1;
+                                    }
+                                    else
+                                    {
+                                        _gameSystem.EndGame();
+                                    }
+                                    break;
+                                case UnitState.Player:
+                                    if (_gameSystem.EnemyCount > 0)
+                                    {
+                                        _gameSystem.EnemyCount -= 1;
+                                    }
+                                    else
+                                    {
+                                        _gameSystem.EndGame();
+                                    }
+                                    break;
+                            }
                         }
+                    }                   
+                }
+
+                if (_contactEnemyList.Count <= 0)
+                {
+                    switch (State)
+                    {
+                        case UnitState.Enemy:
+                            if (_gameSystem.PlayerCount > 0)
+                            {
+                                UnitBe = UnitBehavior.Idle;
+                            }
+                            else
+                            {
+                                _gameSystem.EndGame();
+                            }
+                            break;
+                        case UnitState.Player:
+                            if (_gameSystem.EnemyCount > 0)
+                            {
+                                UnitBe = UnitBehavior.Move;
+                            }
+                            else
+                            {
+                                _gameSystem.EndGame();
+                            }
+                            break;
+                        default:
+                            break;
                     }
                 }
                 break;
@@ -608,7 +683,6 @@ public class UnitObj : MonoBehaviour
                 break;
         }
      
-        UnitBe = UnitBehavior.Idle;
         ChangePattern();
     }
 

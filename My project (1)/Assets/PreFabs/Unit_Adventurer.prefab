@@ -161,13 +161,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UnitBe: 0
-  UnitJob: 3
+  UnitJob: 0
   State: 2
   IsAttack: 0
   ContactOpponent: {fileID: 0}
   _curPos_X: -1
   _curPos_Y: -1
   _hp: 0
+  _contactEnemyList: []
 --- !u!50 &2323052302590684347
 Rigidbody2D:
   serializedVersion: 4
@@ -215,6 +216,7 @@ MonoBehaviour:
   _curPos_X: -1
   _curPos_Y: -1
   _hp: 0
+  _contactEnemyList: []
 --- !u!95 &4660963694980861038
 Animator:
   serializedVersion: 5
@@ -249,3 +251,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameSystem: {fileID: 0}
+  isClick: 0
