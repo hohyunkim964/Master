@@ -6,18 +6,29 @@ public class MapEditor : MonoBehaviour
 {
 
     public GameObject Tile = null;
+    public GameObject EnemyOBJ_Adventurer = null;
+    public GameObject EnemyOBJ_Warrior = null;
+    public GameObject EnemyOBJ_Archor = null;
     public List<GameObject> TileMap = new List<GameObject>();
     public int X_Horizontal = 0;
     public int Y_Vertical = 0;
-    
+    public int Enemy_Warrior = 0;
+    public int Enemy_Archor = 0;
+    public int Enemy_Adventurer = 0;
+
+    [SerializeField] private List<Vector2> _SpawnTilePos = new List<Vector2>();
+    private List<Vector2> _Enemy_Pos = new List<Vector2>();
     private float _minus_Y = 0;
     private float _plus_Y = 0;
     private float _line_Y = 0;
     private short _input_X = 0;
-    
+    [SerializeField] private int _Enemy_Count = 0;
+
     private void Awake()
     {
+        _Enemy_Count = Enemy_Warrior + Enemy_Archor + Enemy_Adventurer;
         _BaseInit();
+        _EnemySpawn();
     }
 
     private void Start()
@@ -48,12 +59,12 @@ public class MapEditor : MonoBehaviour
                 {
                     _line_Y = 0;
                 }
-                            
+
                 for (int j = 0; j < X_Horizontal; j++)
                 {
-                   GameObject a = Instantiate(Tile, this.gameObject.transform);
-                    a.transform.position = new Vector2( -(X_Horizontal / 2) + j, _line_Y);
-                   
+                    GameObject a = Instantiate(Tile, this.gameObject.transform);
+                    a.transform.position = new Vector2(-(X_Horizontal / 2) + j, _line_Y);
+
                     switch (_line_Y)
                     {
                         case 2:
@@ -79,10 +90,33 @@ public class MapEditor : MonoBehaviour
                     }
 
                     _input_X += 1;
+                    
                     TileMap.Add(a);
+
+                    if ((X_Horizontal/2 + 1) <= _input_X) 
+                    {
+                        _SpawnTilePos.Add(new Vector2(a.transform.position.x, _line_Y));
+                    }
                 }
                 _input_X = 0;
             }
+        }
+    }
+
+    private void _EnemySpawn()
+    {
+        //오브젝트 생성
+        for (int i = 0; i < Enemy_Warrior; i++)
+        {
+            GameObject a = Instantiate(EnemyOBJ_Warrior, this.gameObject.transform);
+        }
+        for (int i = 0; i < Enemy_Adventurer; i++)
+        {
+            GameObject a = Instantiate(EnemyOBJ_Adventurer, this.gameObject.transform);
+        }
+        for (int i = 0; i < Enemy_Archor; i++)
+        {
+            GameObject a = Instantiate(EnemyOBJ_Archor, this.gameObject.transform);
         }
     }
 }
