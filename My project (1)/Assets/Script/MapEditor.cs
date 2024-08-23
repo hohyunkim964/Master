@@ -27,6 +27,8 @@ public class MapEditor : MonoBehaviour
     private void Awake()
     {
         _Enemy_Count = Enemy_Warrior + Enemy_Archor + Enemy_Adventurer;
+
+
         _BaseInit();
         _EnemySpawn();
     }
@@ -105,18 +107,35 @@ public class MapEditor : MonoBehaviour
 
     private void _EnemySpawn()
     {
-        //오브젝트 생성
-        for (int i = 0; i < Enemy_Warrior; i++)
+        if (_SpawnTilePos.Count >= _Enemy_Count)
         {
-            GameObject a = Instantiate(EnemyOBJ_Warrior, this.gameObject.transform);
-        }
-        for (int i = 0; i < Enemy_Adventurer; i++)
-        {
-            GameObject a = Instantiate(EnemyOBJ_Adventurer, this.gameObject.transform);
-        }
-        for (int i = 0; i < Enemy_Archor; i++)
-        {
-            GameObject a = Instantiate(EnemyOBJ_Archor, this.gameObject.transform);
+            //오브젝트 생성
+            for (int i = 0; i < Enemy_Warrior; i++)
+            {
+                GameObject a = Instantiate(EnemyOBJ_Warrior, this.gameObject.transform);
+                int randonCount = Random.Range(0, _Enemy_Count);
+                a.transform.position = _SpawnTilePos[randonCount];
+                a.transform.SetParent(null);
+                _SpawnTilePos.RemoveAt(randonCount);
+            }
+
+            for (int i = 0; i < Enemy_Adventurer; i++)
+            {
+                GameObject a = Instantiate(EnemyOBJ_Adventurer, this.gameObject.transform);
+                int randonCount = Random.Range(0, _Enemy_Count);
+                a.transform.position = _SpawnTilePos[randonCount];
+                a.transform.SetParent(null);
+                _SpawnTilePos.RemoveAt(randonCount);
+            }
+
+            for (int i = 0; i < Enemy_Archor; i++)
+            {
+                GameObject a = Instantiate(EnemyOBJ_Archor, this.gameObject.transform);
+                int randonCount = Random.Range(0, _Enemy_Count);
+                a.transform.position = _SpawnTilePos[randonCount];
+                a.transform.SetParent(null);
+                _SpawnTilePos.RemoveAt(randonCount);
+            }
         }
     }
 }

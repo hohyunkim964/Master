@@ -504,9 +504,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Tile: {fileID: 8876730437054417848, guid: c5f21936513007d4bb64a7936f7db67b, type: 3}
+  EnemyOBJ_Adventurer: {fileID: 1326425295298199858, guid: 840c484a28f2daa43828adf1bd7a841b, type: 3}
+  EnemyOBJ_Warrior: {fileID: 8185234891370330098, guid: 0a7169baa3759764bbecb29961038abc, type: 3}
+  EnemyOBJ_Archor: {fileID: 5730669785369069441, guid: 362de51d46c19fe4a9906d2ff7c0b227, type: 3}
   TileMap: []
   X_Horizontal: 10
   Y_Vertical: 5
+  Enemy_Warrior: 2
+  Enemy_Archor: 1
+  Enemy_Adventurer: 3
+  _SpawnTilePos: []
+  _Enemy_Count: 0
 --- !u!4 &262494010
 Transform:
   m_ObjectHideFlags: 0
