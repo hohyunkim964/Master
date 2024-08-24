@@ -108,7 +108,7 @@ public class GameSystem : MonoBehaviour
         _turnTime = 0.0f;
         _GameTime = 0.0f;
         IsGameEnd = false;
-        IsGameStart = true;      
+        IsGameStart = true;     
     }
 
     public void EndGame()

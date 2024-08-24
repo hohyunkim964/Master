@@ -31,11 +31,15 @@ public class UnitObj : MonoBehaviour
     public UnitState State = UnitState.None;
     public bool IsAttack = false;
     public GameObject ContactOpponent = null;
+    public int _curPos_X = -1;
+    public int _curPos_Y = -1;
+    public NodeEditor _node = null;
+    public List<NodeEditor> NodeDirction = new List<NodeEditor>();
+    public List<NodeEditor> OpenList = new List<NodeEditor>();
+    public List<NodeEditor> CloseList = new List<NodeEditor>();
 
-    [SerializeField] private short _curPos_X = -1;
-    [SerializeField] private short _curPos_Y = -1;
     [SerializeField] private float _hp = 0;
-
+    private AstarSystem _astarSystem;
     private GameSystem _gameSystem;
     private SpriteRenderer _spriteRenderer = null;
     private UnitObj _contactEnemy = null; //한 방향 공격시 피격되는 적
@@ -46,10 +50,13 @@ public class UnitObj : MonoBehaviour
     private Animator _animator;
     private bool _isDie = false;
     private float _time = 0.0f;
+    private bool isOnce = false;
+
     private void Awake()
     {
         _rb2d = GetComponent<Rigidbody2D>();
         _gameSystem = GameObject.Find("GameSystem").GetComponent<GameSystem>();
+        _astarSystem = GameObject.Find("A*").GetComponent<AstarSystem>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
         if (_rb2d.bodyType != RigidbodyType2D.Kinematic)
@@ -78,7 +85,7 @@ public class UnitObj : MonoBehaviour
                 break;
         }
 
-        ChangePattern();
+     
     }
 
     private void Update()
@@ -93,12 +100,22 @@ public class UnitObj : MonoBehaviour
         }
         else if (_gameSystem.IsGameStart && !_gameSystem.IsGameEnd)
         {
+            if (!isOnce) 
+            {
+                isOnce = true;
+                ChangePattern();
+                Debug.Log(NodeDirction.Count);
+            }
+
             if (!_isDie)
             {
                 _AttackRangeChk();
-                if (_gameSystem.IsGameTurnEnd)
+                if (_gameSystem.IsGameEnd)
                 {
-                    UnitBe = UnitBehavior.Idle;
+                    if (UnitBe != UnitBehavior.Idle)
+                    {
+                        UnitBe = UnitBehavior.Idle;
+                    }
                 }
                 else
                 {
@@ -109,7 +126,7 @@ public class UnitObj : MonoBehaviour
                             {
                                 UnitBe = UnitBehavior.Move;
                             }
-                            else 
+                            else
                             {
                                 UnitBe = UnitBehavior.Attack;
                             }
@@ -119,7 +136,7 @@ public class UnitObj : MonoBehaviour
                             {
                                 UnitBe = UnitBehavior.Idle;
                             }
-                            else 
+                            else
                             {
                                 UnitBe = UnitBehavior.Attack;
                             }
@@ -187,15 +204,18 @@ public class UnitObj : MonoBehaviour
                     _corCoutine = StartCoroutine(_Attack());
                     break;
                 case UnitBehavior.Move:
-
+                    _corCoutine = StartCoroutine(_Move());
+                    //_Move2();
                     break;
             }
         }
-     //   }
-     //   else
-     //   {
-     //       ChangePattern();
-     //   }
+
+        //   }
+        //   else
+        //   {
+        //       ChangePattern();
+        //   }
+
     }
       
     private void _Astar()
@@ -212,6 +232,11 @@ public class UnitObj : MonoBehaviour
     {
         if (!_gameSystem.IsGameEnd && col.gameObject.TryGetComponent(out NodeEditor tile))
         {
+            _node = tile;
+            if (State == UnitState.Enemy) 
+            {
+                tile.SetisEnemyCheck(true);
+            }
             if (!tile.GetIsStayCheck())
             {
                 tile.SetIsStayCheck(true);
@@ -228,8 +253,11 @@ public class UnitObj : MonoBehaviour
     {
         if (!_gameSystem.IsGameEnd && col.gameObject.TryGetComponent(out NodeEditor tile))
         {
-            Debug.Log(_curPos_X);
-
+            _node = tile;
+            if (State == UnitState.Enemy)
+            {
+                tile.SetisEnemyCheck(true);
+            }
             if (!tile.GetIsStayCheck())
             {
                 tile.SetIsStayCheck(true);
@@ -244,8 +272,13 @@ public class UnitObj : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (_gameSystem.IsGameStart && collision.gameObject.TryGetComponent(out NodeEditor tile))
+        if (!_gameSystem.IsGameEnd && collision.gameObject.TryGetComponent(out NodeEditor tile))
         {
+            _node = null;
+            if (State == UnitState.Enemy)
+            {
+                tile.SetisEnemyCheck(false);
+            }
             if (tile.GetIsStayCheck())
             {
                 tile.SetIsStayCheck(false);
@@ -269,8 +302,8 @@ public class UnitObj : MonoBehaviour
                         case UnitState.Enemy:
                             for (int i = 0; i < _opponentInfo.Count; i++)
                             {
-                                short playerPosX = _opponentInfo[i]._curPos_X;
-                                short playerPosY = _opponentInfo[i]._curPos_Y;
+                                int playerPosX = _opponentInfo[i]._curPos_X;
+                                int playerPosY = _opponentInfo[i]._curPos_Y;
                                 if (!_opponentInfo[i]._isDie)
                                 {
                                     if (playerPosX != _curPos_X && playerPosY != _curPos_Y)
@@ -308,8 +341,8 @@ public class UnitObj : MonoBehaviour
                         case UnitState.Player:
                             for (int i = 0; i < _opponentInfo.Count; i++)
                             {
-                                short enemyPosX = _opponentInfo[i]._curPos_X;
-                                short enemyPosY = _opponentInfo[i]._curPos_Y;
+                                int enemyPosX = _opponentInfo[i]._curPos_X;
+                                int enemyPosY = _opponentInfo[i]._curPos_Y;
                                 if (!_opponentInfo[i]._isDie)
                                 {
                                     if (enemyPosX != _curPos_X && enemyPosY != _curPos_Y)
@@ -355,8 +388,8 @@ public class UnitObj : MonoBehaviour
                         case UnitState.Enemy:
                             for (int i = 0; i < _opponentInfo.Count; i++)
                             {
-                                short playerPosX = _opponentInfo[i]._curPos_X;
-                                short playerPosY = _opponentInfo[i]._curPos_Y;
+                                int playerPosX = _opponentInfo[i]._curPos_X;
+                                int playerPosY = _opponentInfo[i]._curPos_Y;
                                 if (!_opponentInfo[i]._isDie)
                                 {
                                     if (playerPosX != _curPos_X && playerPosY != _curPos_Y)
@@ -392,8 +425,8 @@ public class UnitObj : MonoBehaviour
                         case UnitState.Player:
                             for (int i = 0; i < _opponentInfo.Count; i++)
                             {
-                                short enemyPosX = _opponentInfo[i]._curPos_X;
-                                short enemyPosY = _opponentInfo[i]._curPos_Y;
+                                int enemyPosX = _opponentInfo[i]._curPos_X;
+                                int enemyPosY = _opponentInfo[i]._curPos_Y;
                                 if (!_opponentInfo[i]._isDie)
                                 {
                                     if (enemyPosX != _curPos_X && enemyPosY != _curPos_Y)
@@ -562,10 +595,6 @@ public class UnitObj : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(0.5f);
 
-        //while (_animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1) 
-        //{
-        //    
-        //}
 
         switch (UnitJob)
         {
@@ -684,6 +713,64 @@ public class UnitObj : MonoBehaviour
         }
      
         ChangePattern();
+    }
+
+    public bool islala = false;
+
+    private IEnumerator _Move() 
+    {
+        //오브젝트 이동 이전 적 위치 찾기
+        _astarSystem.FindEnemy(_curPos_X, _curPos_Y);
+
+        //  if (NodeDirction.Count != 0) 
+        //  {
+        //      NodeDirction.Clear();
+        //  }
+        if (OpenList.Count == 0)
+        {
+            _astarSystem.GetDirect(_node, this);
+        }
+        else
+        {
+            _astarSystem.GetDirect(OpenList[0], this);
+        }
+        yield return null;
+        ChangePattern();
+    }
+
+    private void _Move2()
+    {
+        //오브젝트 이동 이전 적 위치 찾기
+        _astarSystem.FindEnemy(_curPos_X, _curPos_Y);
+
+        //  if (NodeDirction.Count != 0) 
+        //  {
+        //      NodeDirction.Clear();
+        //  }
+
+        //// DEBUG:
+        //if (NodeDirction.Count == 0)
+        //{
+        //    _astarSystem.GetDirect(_node, this);
+        //}
+        //Debug.Log(NodeDirction.Count);
+
+        //ChangePattern();
+
+
+
+        _astarSystem.GetDirect(_node, this);
+       
+            ChangePattern();
+        
+      //  Debug.LogFormat("Just time에 NodeDirction Count: {0}", NodeDirction.Count);
+       // StartCoroutine(Wait1Sec());
+    }
+
+    private IEnumerator Wait1Sec()
+    {
+        yield return new WaitForSeconds(1f);
+        Debug.LogFormat("1초 뒤에 NodeDirction Count: {0}", NodeDirction.Count);
     }
 
     private IEnumerator _Idle()

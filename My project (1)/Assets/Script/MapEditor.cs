@@ -10,6 +10,7 @@ public class MapEditor : MonoBehaviour
     public GameObject EnemyOBJ_Warrior = null;
     public GameObject EnemyOBJ_Archor = null;
     public List<GameObject> TileMap = new List<GameObject>();
+    public List<UnitObj> Enemy_Pos = new List<UnitObj>();
     public int X_Horizontal = 0;
     public int Y_Vertical = 0;
     public int Enemy_Warrior = 0;
@@ -17,11 +18,13 @@ public class MapEditor : MonoBehaviour
     public int Enemy_Adventurer = 0;
 
     [SerializeField] private List<Vector2> _SpawnTilePos = new List<Vector2>();
-    private List<Vector2> _Enemy_Pos = new List<Vector2>();
+
+
     private float _minus_Y = 0;
     private float _plus_Y = 0;
     private float _line_Y = 0;
     private short _input_X = 0;
+
     [SerializeField] private int _Enemy_Count = 0;
 
     private void Awake()
@@ -30,6 +33,7 @@ public class MapEditor : MonoBehaviour
 
 
         _BaseInit();
+
         _EnemySpawn();
     }
 
@@ -116,6 +120,7 @@ public class MapEditor : MonoBehaviour
                 int randonCount = Random.Range(0, _Enemy_Count);
                 a.transform.position = _SpawnTilePos[randonCount];
                 a.transform.SetParent(null);
+                Enemy_Pos.Add(a.GetComponent<UnitObj>());
                 _SpawnTilePos.RemoveAt(randonCount);
             }
 
@@ -125,6 +130,7 @@ public class MapEditor : MonoBehaviour
                 int randonCount = Random.Range(0, _Enemy_Count);
                 a.transform.position = _SpawnTilePos[randonCount];
                 a.transform.SetParent(null);
+                Enemy_Pos.Add(a.GetComponent<UnitObj>());
                 _SpawnTilePos.RemoveAt(randonCount);
             }
 
@@ -134,6 +140,7 @@ public class MapEditor : MonoBehaviour
                 int randonCount = Random.Range(0, _Enemy_Count);
                 a.transform.position = _SpawnTilePos[randonCount];
                 a.transform.SetParent(null);
+                Enemy_Pos.Add(a.GetComponent<UnitObj>());
                 _SpawnTilePos.RemoveAt(randonCount);
             }
         }
