@@ -4,14 +4,32 @@ using UnityEngine;
 
 public class NodeEditor : MonoBehaviour
 {
-    public bool isStay = false;
     public int X_Pos = 0;
     public int Y_Pos = 0;
-
     public bool isEnemy = false;
+    public bool isStay = false;
 
+    private GameSystem _gameSystem;
+    [SerializeField] private List<NodeEditor> _prevNode = new List<NodeEditor>();
    [SerializeField] private NodeEditor prevNode = null;
+    private bool isOnce = false;
 
+    private void Awake()
+    {
+        _gameSystem = GameObject.Find("GameSystem").GetComponent<GameSystem>();
+    }
+
+    private void Update()
+    {
+        if (_gameSystem.IsGameStart && _gameSystem.PlayerCount > 0 && !isOnce)
+        {
+            isOnce = true;
+            for (int i = 0; i < _gameSystem.PlayerCount; i++)
+            {
+                _prevNode.Add(null);
+            }
+        }
+    }
 
     public bool GetIsStayCheck()
     {
@@ -38,6 +56,11 @@ public class NodeEditor : MonoBehaviour
         return prevNode;
     }
 
+    public NodeEditor GetPrevNodeNum(int i)
+    {
+        return _prevNode[i];
+    }
+
     public void SetIsStayCheck(bool _isCurrent)
     {
         isStay = _isCurrent;
@@ -52,8 +75,9 @@ public class NodeEditor : MonoBehaviour
     {
         isEnemy = _isCurrent;
     }
-    public void SetNodeInfo(NodeEditor node) 
+    
+    public void SetPrevNode(NodeEditor node, int i)
     {
-        prevNode = node;
+        _prevNode[i] = node;
     }
 }

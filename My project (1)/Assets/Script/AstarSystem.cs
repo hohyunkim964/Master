@@ -47,7 +47,7 @@ public class AstarSystem : MonoBehaviour
     }
     private bool isCheck = false;
 
-    public void GetDirect(NodeEditor Node, UnitObj unit)
+    public void GetDirect(NodeEditor Node, UnitObj unit, int y)
     {
         if (Nodegroup.Count > 0)
         {
@@ -98,35 +98,37 @@ public class AstarSystem : MonoBehaviour
             {
                 for (int x = 0; x < unit.NodeDirction.Count; x++)
                 {
-                    if (unit.CloseList[j] != unit.NodeDirction[x] && !unit.NodeDirction[x].GetIsStayCheck())
+                    if ((unit.CloseList[j] != unit.NodeDirction[x] && !unit.NodeDirction[x].GetIsStayCheck()))
+                    //    || (unit.CloseList[j] != unit.NodeDirction[x] && unit.NodeDirction[x].GetIsStayCheck() && !unit.NodeDirction[x].GetIsEnemyCheck()))
                     {
-                        if (unit.NodeDirction[x].GetPrevNode() == null)
+                        if (unit.NodeDirction[x].GetPrevNodeNum(y) == null)
                         {
-                            unit.NodeDirction[x].SetNodeInfo(_node);
+                            unit.NodeDirction[x].SetPrevNode(_node, y);
                         }
 
                         for (int i = 0; i < unit.OpenList.Count; i++)
                         {
                             isCheck = true;
+
                             if (unit.OpenList[i].gameObject == unit.NodeDirction[x].gameObject)
                             {
                                 isCheck = false;
                                 break;
                             }
                         }
-                        if (isCheck) 
+
+                        if (isCheck)
                         {
                             unit.OpenList.Add(unit.NodeDirction[x]);
                         }
-                    }
+                    }                  
                     else if (unit.CloseList[j] != unit.NodeDirction[x] && unit.NodeDirction[x].GetIsStayCheck() && unit.NodeDirction[x].GetIsEnemyCheck())
                     {
-                        Debug.Log(unit.NodeDirction[x].X_Pos + "            " + unit.NodeDirction[x].Y_Pos);
                         unit._node = _node;
                         unit.isFindPath = true;
                         return;
                     }
-                  
+                                    
                 }
             }
         }
@@ -138,16 +140,17 @@ public class AstarSystem : MonoBehaviour
             }
 
             for (int x = 0; x < unit.NodeDirction.Count; x++)
-            {   
+            {
                 if (!unit.NodeDirction[x].GetIsStayCheck())
                 {
-                    if (unit.NodeDirction[x].GetPrevNode() == null)
+                    if (unit.NodeDirction[x].GetPrevNodeNum(y) == null)
                     {
-                        unit.NodeDirction[x].SetNodeInfo(_node);
+                        unit.NodeDirction[x].SetPrevNode(_node, y);
                     }
+
                     unit.OpenList.Add(unit.NodeDirction[x]);
-                }
-                else 
+                }               
+                else if (unit.NodeDirction[x].GetIsEnemyCheck() && unit.NodeDirction[x].GetIsStayCheck())
                 {
                     return;
                 }

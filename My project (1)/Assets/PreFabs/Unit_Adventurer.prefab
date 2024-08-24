@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4591161738721831600}
   - component: {fileID: 8973554491309202703}
   - component: {fileID: 1477927311192992645}
-  - component: {fileID: -8766280564277382845}
   - component: {fileID: 2323052302590684347}
   - component: {fileID: -216580580830605960}
   - component: {fileID: 4660963694980861038}
@@ -148,34 +147,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-8766280564277382845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6779229924380678127}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e2c7a3796332584d92f069f787fd295, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  UnitBe: 0
-  UnitJob: 0
-  State: 0
-  IsAttack: 0
-  isFindPath: 0
-  ContactOpponent: {fileID: 0}
-  _curPos_X: -1
-  _curPos_Y: -1
-  _node: {fileID: 0}
-  NodeDirction: []
-  OpenList: []
-  CloseList: []
-  PathList: []
-  _hp: 0
-  _contactEnemyList: []
-  islala: 0
 --- !u!50 &2323052302590684347
 Rigidbody2D:
   serializedVersion: 4
@@ -230,7 +201,8 @@ MonoBehaviour:
   PathList: []
   _hp: 0
   _contactEnemyList: []
-  islala: 0
+  PlayerNum: 0
+  isPathFindOn: 0
 --- !u!95 &4660963694980861038
 Animator:
   serializedVersion: 5
