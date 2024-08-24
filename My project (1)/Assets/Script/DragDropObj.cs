@@ -28,7 +28,6 @@ public class DragDropObj : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(_Pos, Vector2.zero, 0f, LayerMask.GetMask("Over UI"));
             if (hit.collider != null)
             {
-                Debug.Log(hit.transform.gameObject);
                 if (hit.transform.gameObject == this.gameObject)
                 {
                     if (isClick)

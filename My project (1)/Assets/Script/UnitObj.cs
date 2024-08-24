@@ -30,6 +30,7 @@ public class UnitObj : MonoBehaviour
     public Unit UnitJob = Unit.People;
     public UnitState State = UnitState.None;
     public bool IsAttack = false;
+    public bool isFindPath = false;
     public GameObject ContactOpponent = null;
     public int _curPos_X = -1;
     public int _curPos_Y = -1;
@@ -37,6 +38,7 @@ public class UnitObj : MonoBehaviour
     public List<NodeEditor> NodeDirction = new List<NodeEditor>();
     public List<NodeEditor> OpenList = new List<NodeEditor>();
     public List<NodeEditor> CloseList = new List<NodeEditor>();
+    public List<NodeEditor> PathList = new List<NodeEditor>();
 
     [SerializeField] private float _hp = 0;
     private AstarSystem _astarSystem;
@@ -51,6 +53,7 @@ public class UnitObj : MonoBehaviour
     private bool _isDie = false;
     private float _time = 0.0f;
     private bool isOnce = false;
+    private bool isPathFind = false;
 
     private void Awake()
     {
@@ -104,7 +107,7 @@ public class UnitObj : MonoBehaviour
             {
                 isOnce = true;
                 ChangePattern();
-                Debug.Log(NodeDirction.Count);
+              //  StartCoroutine(_PathFind());
             }
 
             if (!_isDie)
@@ -122,12 +125,19 @@ public class UnitObj : MonoBehaviour
                     switch (State)
                     {
                         case UnitState.Player:
+                            if (UnitBe == UnitBehavior.Move && !isPathFind)
+                            {
+                                isPathFind = true;
+                                StartCoroutine(_PathFind());
+                            }
+
                             if (!IsAttack)
                             {
                                 UnitBe = UnitBehavior.Move;
                             }
                             else
                             {
+                                isPathFind = false;
                                 UnitBe = UnitBehavior.Attack;
                             }
                             break;
@@ -205,17 +215,10 @@ public class UnitObj : MonoBehaviour
                     break;
                 case UnitBehavior.Move:
                     _corCoutine = StartCoroutine(_Move());
-                    //_Move2();
+
                     break;
             }
         }
-
-        //   }
-        //   else
-        //   {
-        //       ChangePattern();
-        //   }
-
     }
       
     private void _Astar()
@@ -509,7 +512,6 @@ public class UnitObj : MonoBehaviour
                     {
                         if (!_animator.GetBool("Attack"))
                         {
-                            Debug.Log("Att");
                             _animator.SetBool("Attack", true);
                         }
                     }
@@ -542,8 +544,7 @@ public class UnitObj : MonoBehaviour
                     if (_contactEnemyList.Count > 0)
                     {
                         if (!_animator.GetBool("Attack"))
-                        {
-                            Debug.Log("Att");
+                        { 
                             _animator.SetBool("Attack", true);
                         }
                     }
@@ -581,7 +582,6 @@ public class UnitObj : MonoBehaviour
                     {
                         if (!_animator.GetBool("Attack"))
                         {
-                            Debug.Log("Att");
                             _animator.SetBool("Attack", true);
                         }
                     }
@@ -716,61 +716,51 @@ public class UnitObj : MonoBehaviour
     }
 
     public bool islala = false;
-
-    private IEnumerator _Move() 
+    private IEnumerator _Move()
     {
-        //오브젝트 이동 이전 적 위치 찾기
-        _astarSystem.FindEnemy(_curPos_X, _curPos_Y);
-
-        //  if (NodeDirction.Count != 0) 
-        //  {
-        //      NodeDirction.Clear();
-        //  }
-        if (OpenList.Count == 0)
-        {
-            _astarSystem.GetDirect(_node, this);
-        }
-        else
-        {
-            _astarSystem.GetDirect(OpenList[0], this);
-        }
         yield return null;
-        ChangePattern();
     }
 
-    private void _Move2()
+    private IEnumerator _PathFind() 
     {
         //오브젝트 이동 이전 적 위치 찾기
         _astarSystem.FindEnemy(_curPos_X, _curPos_Y);
-
-        //  if (NodeDirction.Count != 0) 
-        //  {
-        //      NodeDirction.Clear();
-        //  }
-
-        //// DEBUG:
-        //if (NodeDirction.Count == 0)
-        //{
-        //    _astarSystem.GetDirect(_node, this);
-        //}
-        //Debug.Log(NodeDirction.Count);
-
-        //ChangePattern();
-
-
-
-        _astarSystem.GetDirect(_node, this);
-       
-            ChangePattern();
         
-      //  Debug.LogFormat("Just time에 NodeDirction Count: {0}", NodeDirction.Count);
-       // StartCoroutine(Wait1Sec());
+        while (!isFindPath)
+        {
+            if (OpenList.Count == 0)
+            {
+                _astarSystem.GetDirect(_node, this);
+            }
+            else
+            {
+                _astarSystem.GetDirect(OpenList[0], this);
+            }
+
+            yield return null;
+        }
+
+        NodeEditor path = _node;
+
+        if (isFindPath)
+        {
+            PathList.Clear();
+            while (path.GetPrevNode() != null)
+            {
+                PathList.Add(path);
+                path = path.GetPrevNode();
+
+                yield return null;
+            }
+        }
+
     }
+
 
     private IEnumerator Wait1Sec()
     {
         yield return new WaitForSeconds(1f);
-        Debug.LogFormat("1초 뒤에 NodeDirction Count: {0}", NodeDirction.Count);
+       // Debug.LogFormat("1초 뒤에 NodeDirction Count: {0}", NodeDirction.Count);
     }
 
     private IEnumerator _Idle()

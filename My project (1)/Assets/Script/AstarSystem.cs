@@ -5,9 +5,9 @@ using UnityEngine;
 public class AstarSystem : MonoBehaviour
 {
     public List<NodeEditor> Nodegroup = new List<NodeEditor>();
-
     private MapEditor _map;
     private NodeEditor _node;
+    private NodeEditor _insertNode;
 
     public void Awake()
     {
@@ -100,7 +100,11 @@ public class AstarSystem : MonoBehaviour
                 {
                     if (unit.CloseList[j] != unit.NodeDirction[x] && !unit.NodeDirction[x].GetIsStayCheck())
                     {
-                        unit.NodeDirction[x].SetNodeInfo(_node);
+                        if (unit.NodeDirction[x].GetPrevNode() == null)
+                        {
+                            unit.NodeDirction[x].SetNodeInfo(_node);
+                        }
+
                         for (int i = 0; i < unit.OpenList.Count; i++)
                         {
                             isCheck = true;
@@ -118,6 +122,8 @@ public class AstarSystem : MonoBehaviour
                     else if (unit.CloseList[j] != unit.NodeDirction[x] && unit.NodeDirction[x].GetIsStayCheck() && unit.NodeDirction[x].GetIsEnemyCheck())
                     {
                         Debug.Log(unit.NodeDirction[x].X_Pos + "            " + unit.NodeDirction[x].Y_Pos);
+                        unit._node = _node;
+                        unit.isFindPath = true;
                         return;
                     }
                   
@@ -135,12 +141,14 @@ public class AstarSystem : MonoBehaviour
             {   
                 if (!unit.NodeDirction[x].GetIsStayCheck())
                 {
-                    unit.NodeDirction[x].SetNodeInfo(_node);
+                    if (unit.NodeDirction[x].GetPrevNode() == null)
+                    {
+                        unit.NodeDirction[x].SetNodeInfo(_node);
+                    }
                     unit.OpenList.Add(unit.NodeDirction[x]);
                 }
                 else 
                 {
-                    Debug.Log("3as");
                     return;
                 }
             }
@@ -151,9 +159,19 @@ public class AstarSystem : MonoBehaviour
         {
             unit.CloseList.Add(_node);
 
-            Debug.Log("as");
             unit.OpenList.RemoveAt(0);
         }
+    }
+
+    public void GetFindPath(NodeEditor Node)
+    {
+       // _insertNode = Node;
+       //
+       // while (_insertNode.GetPrevNode() != null)
+       // {
+       //     Path.Add(_insertNode);
+       //     _insertNode = _insertNode.GetPrevNode();
+       // }
     }
 
     public void Directinfo(UnitObj unit) 

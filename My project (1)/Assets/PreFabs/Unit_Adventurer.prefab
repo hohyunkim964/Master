@@ -162,13 +162,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitBe: 0
   UnitJob: 0
-  State: 2
+  State: 0
   IsAttack: 0
+  isFindPath: 0
   ContactOpponent: {fileID: 0}
   _curPos_X: -1
   _curPos_Y: -1
+  _node: {fileID: 0}
+  NodeDirction: []
+  OpenList: []
+  CloseList: []
+  PathList: []
   _hp: 0
   _contactEnemyList: []
+  islala: 0
 --- !u!50 &2323052302590684347
 Rigidbody2D:
   serializedVersion: 4
@@ -212,11 +219,18 @@ MonoBehaviour:
   UnitJob: 0
   State: 0
   IsAttack: 0
+  isFindPath: 0
   ContactOpponent: {fileID: 0}
   _curPos_X: -1
   _curPos_Y: -1
+  _node: {fileID: 0}
+  NodeDirction: []
+  OpenList: []
+  CloseList: []
+  PathList: []
   _hp: 0
   _contactEnemyList: []
+  islala: 0
 --- !u!95 &4660963694980861038
 Animator:
   serializedVersion: 5

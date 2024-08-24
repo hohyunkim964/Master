@@ -33,6 +33,11 @@ public class NodeEditor : MonoBehaviour
         return Y_Pos;
     }
 
+    public NodeEditor GetPrevNode()
+    {
+        return prevNode;
+    }
+
     public void SetIsStayCheck(bool _isCurrent)
     {
         isStay = _isCurrent;
