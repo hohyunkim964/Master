@@ -62,6 +62,7 @@ public class DragDropObj : MonoBehaviour
     {
         if (!isClick && collision.gameObject.CompareTag("UI"))
         {
+            Destroy(this.gameObject.GetComponent<UnitObj>().HPBar);
             Destroy(this.gameObject);
         }
     }
@@ -70,6 +71,7 @@ public class DragDropObj : MonoBehaviour
     {
         if (!isClick && collision.gameObject.CompareTag("UI"))
         {
+            Destroy(this.gameObject.GetComponent<UnitObj>().HPBar);
             Destroy(this.gameObject);
         }
     }

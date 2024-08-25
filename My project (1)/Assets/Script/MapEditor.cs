@@ -4,34 +4,34 @@ using UnityEngine;
 
 public class MapEditor : MonoBehaviour
 {
-
     public GameObject Tile = null;
     public GameObject EnemyOBJ_Adventurer = null;
     public GameObject EnemyOBJ_Warrior = null;
     public GameObject EnemyOBJ_Archor = null;
     public List<GameObject> TileMap = new List<GameObject>();
     public List<UnitObj> Enemy_Pos = new List<UnitObj>();
+
     public int X_Horizontal = 0;
     public int Y_Vertical = 0;
     public int Enemy_Warrior = 0;
     public int Enemy_Archor = 0;
     public int Enemy_Adventurer = 0;
 
-    [SerializeField] private List<Vector2> _SpawnTilePos = new List<Vector2>();
-
+    private UIManager _uiManager;
+    private List<Vector2> _SpawnTilePos = new List<Vector2>();
+    private GameSystem _gameSystem;
 
     private float _minus_Y = 0;
     private float _plus_Y = 0;
     private float _line_Y = 0;
     private short _input_X = 0;
-
-    [SerializeField] private int _Enemy_Count = 0;
+    private int _Enemy_Count = 0;
 
     private void Awake()
     {
         _Enemy_Count = Enemy_Warrior + Enemy_Archor + Enemy_Adventurer;
-
-
+        _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
+        _gameSystem = GameObject.Find("GameSystem").GetComponent<GameSystem>();
         _BaseInit();
 
         _EnemySpawn();
@@ -121,7 +121,9 @@ public class MapEditor : MonoBehaviour
                 a.transform.position = _SpawnTilePos[randonCount];
                 a.transform.SetParent(null);
                 Enemy_Pos.Add(a.GetComponent<UnitObj>());
-                _SpawnTilePos.RemoveAt(randonCount);
+                _SpawnTilePos.RemoveAt(randonCount);               
+                _uiManager.CreateHPBar(a);
+                _gameSystem.EnemyCount += 1;
             }
 
             for (int i = 0; i < Enemy_Adventurer; i++)
@@ -131,7 +133,9 @@ public class MapEditor : MonoBehaviour
                 a.transform.position = _SpawnTilePos[randonCount];
                 a.transform.SetParent(null);
                 Enemy_Pos.Add(a.GetComponent<UnitObj>());
-                _SpawnTilePos.RemoveAt(randonCount);
+                _SpawnTilePos.RemoveAt(randonCount);     
+                _uiManager.CreateHPBar(a);
+                _gameSystem.EnemyCount += 1;
             }
 
             for (int i = 0; i < Enemy_Archor; i++)
@@ -142,6 +146,8 @@ public class MapEditor : MonoBehaviour
                 a.transform.SetParent(null);
                 Enemy_Pos.Add(a.GetComponent<UnitObj>());
                 _SpawnTilePos.RemoveAt(randonCount);
+                _uiManager.CreateHPBar(a);
+                _gameSystem.EnemyCount += 1;
             }
         }
     }

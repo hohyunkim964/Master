@@ -29,14 +29,9 @@ public class UnitObj : MonoBehaviour
     public UnitBehavior UnitBe = UnitBehavior.Idle;
     public Unit UnitJob = Unit.People;
     public UnitState State = UnitState.None;
-    public bool IsAttack = false;
-    public bool isFindPath = false;
-    public bool isNotFoundPath = false;
-    public bool isPathFindOn = false;
+
+    public GameObject HPBar = null;
     public GameObject ContactOpponent = null;
-    public int _curPos_X = -1;
-    public int _curPos_Y = -1;
-    public float Speed = 10f;
     public NodeEditor _node = null;
     public NodeEditor _StartNode;
     public List<NodeEditor> NodeDirction = new List<NodeEditor>();
@@ -44,20 +39,31 @@ public class UnitObj : MonoBehaviour
     public List<NodeEditor> CloseList = new List<NodeEditor>();
     public List<NodeEditor> PathList = new List<NodeEditor>();
 
-    [SerializeField] private float _hp = 0;
+    public bool IsAttack = false;
+    public bool isFindPath = false;
+    public bool isNotFoundPath = false;
+    public bool isPathFindOn = false;
+
+    public int _curPos_X = -1;
+    public int _curPos_Y = -1;
+    public float Speed = 10f;
+    public float _hp = 0;
+       
     private AstarSystem _astarSystem;
     private GameSystem _gameSystem;
-    [SerializeField] private SpriteRenderer _spriteRenderer = null;
     private UnitObj _contactEnemy = null; //한 방향 공격시 피격되는 적
     public List<UnitObj> _contactEnemyList = new List<UnitObj>(); //다중 공격시 피격되는 적
     private List<UnitObj> _opponentInfo = new List<UnitObj>();
     private Coroutine _corCoutine;
+    private SpriteRenderer _spriteRenderer = null;
     private Rigidbody2D _rb2d;
     private Animator _animator;   
+
     private bool isOnce = false;
     private bool _isMove = false;
-    [SerializeField] private bool _isDie = false;
-    [SerializeField] private int PlayerNum = 0;
+    private bool _isDie = false;
+
+    private int PlayerNum = 0;
 
 
     private void Awake()
@@ -71,12 +77,7 @@ public class UnitObj : MonoBehaviour
         {
             _rb2d.bodyType = RigidbodyType2D.Kinematic;
         }
-        
-        CheckOpponentCount();
-    }
 
-    private void Start()
-    {
         switch (UnitJob)
         {
             case Unit.Adventurer:
@@ -93,9 +94,9 @@ public class UnitObj : MonoBehaviour
                 break;
         }
 
-     
+        CheckOpponentCount();
     }
-
+    
     private void Update()
     {
         if (!_gameSystem.IsGameStart && !_gameSystem.IsGameEnd)
@@ -118,6 +119,7 @@ public class UnitObj : MonoBehaviour
                 }
                 else
                 {
+                    HPBar.SetActive(false);
                     this.gameObject.SetActive(false);
                 }
 
@@ -232,7 +234,6 @@ public class UnitObj : MonoBehaviour
     {
         // if (!_gameSystem.IsGameTurnEnd)
         // {
-
         if (!_isDie && this.gameObject.activeSelf)
         {
             if (_corCoutine != null)
@@ -542,6 +543,8 @@ public class UnitObj : MonoBehaviour
 
     private IEnumerator _Attack()
     {
+        PathList.Clear();
+
         while (!_gameSystem.IsGameTurnEnd)
         {
             switch (UnitJob)
@@ -609,9 +612,18 @@ public class UnitObj : MonoBehaviour
                     }
                     if (_contactEnemyList.Count > 0)
                     {
-                        if (!_animator.GetBool("Attack"))
-                        { 
-                            _animator.SetBool("Attack", true);
+                        for (int i = 0; i < _contactEnemyList.Count; i++)
+                        {
+                            while (_contactEnemyList[i].UnitBe == UnitBehavior.Move)
+                            {
+                                yield return null;
+                            }
+
+                            if (!_animator.GetBool("Attack"))
+                            {
+                                _animator.SetBool("Attack", true);
+                                break;
+                            }
                         }
                     }
                     break;
@@ -777,7 +789,7 @@ public class UnitObj : MonoBehaviour
             default:
                 break;
         }
-     
+
         ChangePattern();
     }
 
@@ -792,6 +804,12 @@ public class UnitObj : MonoBehaviour
             yield return null;
         }
         _isMove = false;
+        
+        if (_animator.GetBool("Attack"))
+        {
+            _animator.SetBool("Attack", false);
+        }
+
         if (!_animator.GetBool("Move"))
         {
             _animator.SetBool("Move", true);
@@ -808,16 +826,11 @@ public class UnitObj : MonoBehaviour
             }
         }
 
-        // Debug.Log(PathList[PathList.Count - 1].X_Pos);
-        // Debug.Log(PathList[PathList.Count - 1].Y_Pos);
-
         while (UnitBe == UnitBehavior.Move)
         {
             yield return null;
         }
-
-      
-
+       
         ChangePattern();
     }
 
@@ -884,7 +897,6 @@ public class UnitObj : MonoBehaviour
         {
             yield return null;
         }
-
         ChangePattern();
     }
 }

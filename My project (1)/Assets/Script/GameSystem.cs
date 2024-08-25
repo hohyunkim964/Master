@@ -6,6 +6,7 @@ public class GameSystem : MonoBehaviour
 {
     public UIManager Uimanager = null;
     public List<GameObject> EnemyList = new List<GameObject>();
+    public GameObject Map = null;
     public GameObject[] Enemy;
     public GameObject[] Player;
     public bool IsGameStart = false;
@@ -24,12 +25,12 @@ public class GameSystem : MonoBehaviour
     {
         if (Uimanager != null)
         {
-            Uimanager = GameObject.Find("UImanager").GetComponent<UIManager>();
+            Uimanager = GameObject.Find("UIManager").GetComponent<UIManager>();
         }
 
         Player = GameObject.FindGameObjectsWithTag("Player");
         Enemy = GameObject.FindGameObjectsWithTag("Enemy");
-
+        Map = GameObject.Find("MapEditor").gameObject;
         PlayerCount = Player.Length;
         EnemyCount = Enemy.Length;
     }
@@ -136,12 +137,32 @@ public class GameSystem : MonoBehaviour
 
     private void _Win()
     {
+        for (int i = 0; i < Player.Length; i++)
+        {
+            Player[i].gameObject.SetActive(false);
+        }
 
+        for (int i = 0; i < Enemy.Length; i++)
+        {
+            Enemy[i].gameObject.SetActive(false);
+        }
+        Map.SetActive(false);
+        Uimanager.WinPanel.SetActive(true);
     }
 
     private void _Lose()
     {
+        for (int i = 0; i < Player.Length; i++)
+        {
+            Player[i].gameObject.SetActive(false);
+        }
 
+        for (int i = 0; i < Enemy.Length; i++)
+        {
+            Enemy[i].gameObject.SetActive(false);
+        }
+        Map.SetActive(false);
+        Uimanager.LosePanel.SetActive(true);
     }
 
     private void _Draw()
