@@ -31,10 +31,12 @@ public class UnitObj : MonoBehaviour
     public UnitState State = UnitState.None;
     public bool IsAttack = false;
     public bool isFindPath = false;
+    public bool isNotFoundPath = false;
     public GameObject ContactOpponent = null;
     public int _curPos_X = -1;
     public int _curPos_Y = -1;
     public NodeEditor _node = null;
+    public NodeEditor _StartNode;
     public List<NodeEditor> NodeDirction = new List<NodeEditor>();
     public List<NodeEditor> OpenList = new List<NodeEditor>();
     public List<NodeEditor> CloseList = new List<NodeEditor>();
@@ -272,14 +274,17 @@ public class UnitObj : MonoBehaviour
             {
                 _node = tile;
             }
+
             if (State == UnitState.Enemy) 
             {
                 tile.SetisEnemyCheck(true);
             }
+
             if (!tile.GetIsStayCheck())
             {
                 tile.SetIsStayCheck(true);
             }
+
             if (_curPos_Y != tile.GetNodeCountY() || _curPos_X != tile.GetNodeCountX())
             {
                 _curPos_X = tile.GetNodeCountX();
@@ -296,14 +301,17 @@ public class UnitObj : MonoBehaviour
             {
                 _node = tile;
             }
+
             if (State == UnitState.Enemy)
             {
                 tile.SetisEnemyCheck(true);
             }
+
             if (!tile.GetIsStayCheck())
             {
                 tile.SetIsStayCheck(true);
             }
+
             if (_curPos_Y != tile.GetNodeCountY() || _curPos_X != tile.GetNodeCountX())
             {
                 _curPos_X = tile.GetNodeCountX();
@@ -769,6 +777,8 @@ public class UnitObj : MonoBehaviour
             yield return null;
         }
 
+        Debug.Log(PathList.Count);
+
        // Debug.Log(PathList[PathList.Count - 1].X_Pos);
        // Debug.Log(PathList[PathList.Count - 1].Y_Pos);
 
@@ -787,7 +797,7 @@ public class UnitObj : MonoBehaviour
         //오브젝트 이동 이전 적 위치 찾기
         _astarSystem.FindEnemy(_curPos_X, _curPos_Y);
 
-    
+        _StartNode = _node;
 
         while (!isFindPath)
         {
