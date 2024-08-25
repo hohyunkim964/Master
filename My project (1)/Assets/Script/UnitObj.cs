@@ -32,9 +32,11 @@ public class UnitObj : MonoBehaviour
     public bool IsAttack = false;
     public bool isFindPath = false;
     public bool isNotFoundPath = false;
+    public bool isPathFindOn = false;
     public GameObject ContactOpponent = null;
     public int _curPos_X = -1;
     public int _curPos_Y = -1;
+    public float Speed = 10f;
     public NodeEditor _node = null;
     public NodeEditor _StartNode;
     public List<NodeEditor> NodeDirction = new List<NodeEditor>();
@@ -45,16 +47,16 @@ public class UnitObj : MonoBehaviour
     [SerializeField] private float _hp = 0;
     private AstarSystem _astarSystem;
     private GameSystem _gameSystem;
-    private SpriteRenderer _spriteRenderer = null;
+    [SerializeField] private SpriteRenderer _spriteRenderer = null;
     private UnitObj _contactEnemy = null; //한 방향 공격시 피격되는 적
     public List<UnitObj> _contactEnemyList = new List<UnitObj>(); //다중 공격시 피격되는 적
     private List<UnitObj> _opponentInfo = new List<UnitObj>();
     private Coroutine _corCoutine;
     private Rigidbody2D _rb2d;
-    private Animator _animator;
-    private bool _isDie = false;
+    private Animator _animator;   
     private bool isOnce = false;
     private bool _isMove = false;
+    [SerializeField] private bool _isDie = false;
     [SerializeField] private int PlayerNum = 0;
 
 
@@ -188,6 +190,7 @@ public class UnitObj : MonoBehaviour
             }
             else
             {
+                IsAttack = false;
                 if (_spriteRenderer.enabled)
                 {
                     _spriteRenderer.enabled = false;
@@ -386,6 +389,10 @@ public class UnitObj : MonoBehaviour
                                         break;
                                     }
                                 }
+                                else
+                                {
+                                    IsAttack = false;
+                                }
                             }
                             break;
                         case UnitState.Player:
@@ -425,6 +432,10 @@ public class UnitObj : MonoBehaviour
                                         break;
                                     }
                                 }
+                                else
+                                {
+                                    IsAttack = false;
+                                }
                             }  
                             break;
                         default:
@@ -436,6 +447,10 @@ public class UnitObj : MonoBehaviour
                     switch (State)
                     {
                         case UnitState.Enemy:
+                            if (_opponentInfo.Count == 0)
+                            {
+                                IsAttack = false;
+                            }
                             for (int i = 0; i < _opponentInfo.Count; i++)
                             {
                                 int playerPosX = _opponentInfo[i]._curPos_X;
@@ -473,6 +488,10 @@ public class UnitObj : MonoBehaviour
                             }
                             break;
                         case UnitState.Player:
+                            if (_opponentInfo.Count == 0)
+                            {
+                                IsAttack = false;
+                            }
                             for (int i = 0; i < _opponentInfo.Count; i++)
                             {
                                 int enemyPosX = _opponentInfo[i]._curPos_X;
@@ -762,7 +781,7 @@ public class UnitObj : MonoBehaviour
         ChangePattern();
     }
 
-    public bool isPathFindOn = false;
+
     private IEnumerator _Move()
     {
      
@@ -778,15 +797,15 @@ public class UnitObj : MonoBehaviour
             _animator.SetBool("Move", true);
         }
 
-
-        Debug.Log(PathList.Count);
-
-        for (int i = PathList.Count - 1; i < 0; i--)
+        for (int i = PathList.Count - 1; i >= 0; i--)
         {
-
-            Debug.Log(PathList[PathList.Count - 1].X_Pos);
-            Debug.Log(PathList[PathList.Count - 1].Y_Pos);
-            //좌표?
+            var runTime = 0.0f;
+            while (runTime < 1f)
+            {
+                runTime += Time.deltaTime;
+                transform.position = Vector3.Lerp(this.gameObject.transform.position, PathList[i].transform.position, runTime / 1f);
+                yield return null;
+            }
         }
 
         // Debug.Log(PathList[PathList.Count - 1].X_Pos);
