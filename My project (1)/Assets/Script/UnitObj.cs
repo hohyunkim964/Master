@@ -54,7 +54,7 @@ public class UnitObj : MonoBehaviour
     private Animator _animator;
     private bool _isDie = false;
     private bool isOnce = false;
-    private bool isPathFind = false;
+    private bool _isMove = false;
     [SerializeField] private int PlayerNum = 0;
 
 
@@ -765,22 +765,32 @@ public class UnitObj : MonoBehaviour
     public bool isPathFindOn = false;
     private IEnumerator _Move()
     {
+     
+        IsAttack = false;
+
+        while (!_isMove)
+        {
+            yield return null;
+        }
+        _isMove = false;
         if (!_animator.GetBool("Move"))
         {
             _animator.SetBool("Move", true);
         }
 
-        IsAttack = false;
-
-        while (!isFindPath)
-        {
-            yield return null;
-        }
 
         Debug.Log(PathList.Count);
 
-       // Debug.Log(PathList[PathList.Count - 1].X_Pos);
-       // Debug.Log(PathList[PathList.Count - 1].Y_Pos);
+        for (int i = PathList.Count - 1; i < 0; i--)
+        {
+
+            Debug.Log(PathList[PathList.Count - 1].X_Pos);
+            Debug.Log(PathList[PathList.Count - 1].Y_Pos);
+            //ÁÂÇ¥?
+        }
+
+        // Debug.Log(PathList[PathList.Count - 1].X_Pos);
+        // Debug.Log(PathList[PathList.Count - 1].Y_Pos);
 
         while (UnitBe == UnitBehavior.Move)
         {
@@ -826,6 +836,7 @@ public class UnitObj : MonoBehaviour
             }
             
             isPathFindOn = false;
+            _isMove = true;
         }
     }
 
