@@ -189,20 +189,24 @@ MonoBehaviour:
   UnitBe: 0
   UnitJob: 0
   State: 0
-  IsAttack: 0
-  isFindPath: 0
+  HPBar: {fileID: 0}
   ContactOpponent: {fileID: 0}
-  _curPos_X: -1
-  _curPos_Y: -1
   _node: {fileID: 0}
+  _StartNode: {fileID: 0}
   NodeDirction: []
   OpenList: []
   CloseList: []
   PathList: []
-  _hp: 0
-  _contactEnemyList: []
-  PlayerNum: 0
+  IsAttack: 0
+  isFindPath: 0
+  isNotFoundPath: 0
   isPathFindOn: 0
+  _isDie: 0
+  _curPos_X: -1
+  _curPos_Y: -1
+  Speed: 10
+  _hp: 10
+  _contactEnemyList: []
 --- !u!95 &4660963694980861038
 Animator:
   serializedVersion: 5

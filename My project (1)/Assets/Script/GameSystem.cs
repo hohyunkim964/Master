@@ -20,7 +20,8 @@ public class GameSystem : MonoBehaviour
 
     private float _turnTime = 0.0f;
     private float _GameTime = 0.0f;
-
+    private int _isCheckEnemyNum = 0;
+    private int _isCheckPlayerNum = 0;
     private void Awake()
     {
         if (Uimanager != null)
@@ -76,6 +77,41 @@ public class GameSystem : MonoBehaviour
             if (_GameTime < 600f)
             {
                 _GameTime += Time.deltaTime;
+                _isCheckPlayerNum = 0;
+                _isCheckEnemyNum = 0;
+                for (int i = 0; i < Enemy.Length; i++) 
+                {
+                    if (!Enemy[i].GetComponent<UnitObj>()._isDie) 
+                    {
+                        _isCheckEnemyNum++;
+                    }
+                }
+
+                for (int i = 0; i < Player.Length; i++)
+                {
+                    if (!Player[i].GetComponent<UnitObj>()._isDie)
+                    {
+                        _isCheckPlayerNum++;                       
+                    }
+                }
+
+                if (_isCheckPlayerNum != PlayerCount) 
+                {
+                    PlayerCount = _isCheckPlayerNum;
+                }
+                if (_isCheckEnemyNum != EnemyCount)
+                {
+                    EnemyCount = _isCheckEnemyNum;
+                }
+
+                if (PlayerCount <= 0)
+                {
+                    _Lose();
+                }
+                else if(EnemyCount <= 0)
+                {
+                    _Win();
+                }
 
                 if (!IsGameTurnEnd)
                 {

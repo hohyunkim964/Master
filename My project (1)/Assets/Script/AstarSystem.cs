@@ -129,10 +129,10 @@ public class AstarSystem : MonoBehaviour
                         {
                             unit.OpenList.Add(unit.NodeDirction[x]);
                         }
-                    }
+                    }                  
                     else if (unit.CloseList[j] != unit.NodeDirction[x] && unit.NodeDirction[x].GetIsStayCheck() && unit.NodeDirction[x].GetIsEnemyCheck())
                     {
-                        Debug.Log(unit.NodeDirction[x].X_Pos + "            " + unit.NodeDirction[x].Y_Pos);
+                        //   Debug.Log(unit.NodeDirction[x].X_Pos + "            " + unit.NodeDirction[x].Y_Pos);
                         unit._node = _node;
                         unit.isFindPath = true;
                         return;
@@ -156,7 +156,7 @@ public class AstarSystem : MonoBehaviour
                     }
 
                     unit.OpenList.Add(unit.NodeDirction[x]);
-                }               
+                }             
                 else if (unit.NodeDirction[x].GetIsEnemyCheck() && unit.NodeDirction[x].GetIsStayCheck())
                 {
                     return;

@@ -78,7 +78,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0.53, y: 0.47, z: 0.44, w: 0.5}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.5, y: 1.5}
+    oldSize: {x: 0.56, y: 0.56}
     newSize: {x: 1.5, y: 1.5}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -159,12 +159,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e2c7a3796332584d92f069f787fd295, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UnitBe: 0
   UnitJob: 0
   State: 1
+  HPBar: {fileID: 0}
+  ContactOpponent: {fileID: 0}
+  _node: {fileID: 0}
+  _StartNode: {fileID: 0}
+  NodeDirction: []
+  OpenList: []
+  CloseList: []
+  PathList: []
   IsAttack: 0
+  isFindPath: 0
+  isNotFoundPath: 0
+  isPathFindOn: 0
+  _isDie: 0
   _curPos_X: -1
   _curPos_Y: -1
-  _opponentInfo: []
+  Speed: 10
+  _hp: 0
+  _contactEnemyList: []
 --- !u!50 &5102851362110193887
 Rigidbody2D:
   serializedVersion: 4
@@ -204,12 +219,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e2c7a3796332584d92f069f787fd295, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UnitBe: 0
   UnitJob: 3
   State: 2
+  HPBar: {fileID: 0}
+  ContactOpponent: {fileID: 0}
+  _node: {fileID: 0}
+  _StartNode: {fileID: 0}
+  NodeDirction: []
+  OpenList: []
+  CloseList: []
+  PathList: []
   IsAttack: 0
+  isFindPath: 0
+  isNotFoundPath: 0
+  isPathFindOn: 0
+  _isDie: 0
   _curPos_X: -1
   _curPos_Y: -1
-  _opponentInfo: []
+  Speed: 10
+  _hp: 10
+  _contactEnemyList: []
 --- !u!95 &2422659217838371320
 Animator:
   serializedVersion: 5

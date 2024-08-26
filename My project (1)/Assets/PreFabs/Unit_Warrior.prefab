@@ -78,7 +78,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0.32999998, y: 0.48, z: 0.32999998, w: 0.48}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.5, y: 1.5}
+    oldSize: {x: 0.65, y: 0.62}
     newSize: {x: 1.5, y: 1.5}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -189,11 +189,24 @@ MonoBehaviour:
   UnitBe: 0
   UnitJob: 1
   State: 0
-  IsAttack: 0
+  HPBar: {fileID: 0}
   ContactOpponent: {fileID: 0}
+  _node: {fileID: 0}
+  _StartNode: {fileID: 0}
+  NodeDirction: []
+  OpenList: []
+  CloseList: []
+  PathList: []
+  IsAttack: 0
+  isFindPath: 0
+  isNotFoundPath: 0
+  isPathFindOn: 0
+  _isDie: 0
   _curPos_X: -1
   _curPos_Y: -1
-  _hp: 0
+  Speed: 10
+  _hp: 30
+  _contactEnemyList: []
 --- !u!95 &5373222273143970530
 Animator:
   serializedVersion: 5
@@ -228,3 +241,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameSystem: {fileID: 0}
+  isClick: 0

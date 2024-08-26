@@ -43,12 +43,14 @@ public class UnitObj : MonoBehaviour
     public bool isFindPath = false;
     public bool isNotFoundPath = false;
     public bool isPathFindOn = false;
+    public bool _isDie = false;
 
     public int _curPos_X = -1;
     public int _curPos_Y = -1;
     public float Speed = 10f;
     public float _hp = 0;
-       
+
+    private MapEditor nodeEditor;
     private AstarSystem _astarSystem;
     private GameSystem _gameSystem;
     private UnitObj _contactEnemy = null; //한 방향 공격시 피격되는 적
@@ -56,12 +58,13 @@ public class UnitObj : MonoBehaviour
     private List<UnitObj> _opponentInfo = new List<UnitObj>();
     private Coroutine _corCoutine;
     private SpriteRenderer _spriteRenderer = null;
+    private BoxCollider2D _boxCollider2D;
     private Rigidbody2D _rb2d;
     private Animator _animator;   
 
     private bool isOnce = false;
     private bool _isMove = false;
-    private bool _isDie = false;
+ 
 
     private int PlayerNum = 0;
 
@@ -73,6 +76,8 @@ public class UnitObj : MonoBehaviour
         _astarSystem = GameObject.Find("A*").GetComponent<AstarSystem>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _boxCollider2D = GetComponent<BoxCollider2D>();
+
         if (_rb2d.bodyType != RigidbodyType2D.Kinematic)
         {
             _rb2d.bodyType = RigidbodyType2D.Kinematic;
@@ -90,21 +95,25 @@ public class UnitObj : MonoBehaviour
                 _hp = 30;
                 break;
             default:
-                _hp = 0;
                 break;
         }
 
         CheckOpponentCount();
     }
-    
+
+    private void Start()
+    {
+        nodeEditor = _gameSystem.Map.GetComponent<MapEditor>();
+    }
+
     private void Update()
     {
         if (!_gameSystem.IsGameStart && !_gameSystem.IsGameEnd)
         {
-            if (!_spriteRenderer.enabled)
-            {
+            if (!_spriteRenderer.enabled)     
                 _spriteRenderer.enabled = true;
-            }
+            
+        
             CheckOpponentCount();
         }
         else if (_gameSystem.IsGameStart && !_gameSystem.IsGameEnd)
@@ -120,6 +129,7 @@ public class UnitObj : MonoBehaviour
                 else
                 {
                     HPBar.SetActive(false);
+                    _isDie = true;
                     this.gameObject.SetActive(false);
                 }
 
@@ -139,7 +149,12 @@ public class UnitObj : MonoBehaviour
             if (!_isDie)
             {
                 _AttackRangeChk();
-                
+
+                if (_hp <= 0 && !_isDie) 
+                {
+                    _isDie = true;
+                }
+
                 if (_gameSystem.IsGameEnd)
                 {
                     if (UnitBe != UnitBehavior.Idle)
@@ -153,8 +168,8 @@ public class UnitObj : MonoBehaviour
                     {
                         case UnitState.Player:        
                             if (!IsAttack)
-                            {
-                                if (UnitBe != UnitBehavior.Move && PathList.Count != 0)
+                            {                              
+                                if (PathList.Count != 0)
                                 {                                 
                                     UnitBe = UnitBehavior.Move;
                                 }
@@ -163,8 +178,9 @@ public class UnitObj : MonoBehaviour
                                     if (PathList.Count == 0 && !isPathFindOn)
                                     {
                                         isPathFindOn = true;
-
-                                        if(_node != null)
+                                        UnitBe = UnitBehavior.Idle;
+                                     
+                                        if (_node != null)
                                             StartCoroutine(_PathFind());
                                     }
                                 }
@@ -193,11 +209,16 @@ public class UnitObj : MonoBehaviour
             else
             {
                 IsAttack = false;
+
                 if (_spriteRenderer.enabled)
                 {
                     _spriteRenderer.enabled = false;
                 }
+                if (_boxCollider2D.enabled)
+                    _boxCollider2D.enabled = false;
             }
+
+            
         }
     }
 
@@ -234,13 +255,13 @@ public class UnitObj : MonoBehaviour
     {
         // if (!_gameSystem.IsGameTurnEnd)
         // {
-        if (!_isDie && this.gameObject.activeSelf)
-        {
+        
             if (_corCoutine != null)
             {
                 StopCoroutine(_corCoutine);
             }
-
+        if (!_isDie && _spriteRenderer.enabled == true)
+        {
             switch (UnitBe)
             {
                 case UnitBehavior.Idle:
@@ -259,20 +280,11 @@ public class UnitObj : MonoBehaviour
             }
         }
     }
-      
-    private void _Astar()
-    {
-
-    }
-
-    private void _Action(Unit _unit)
-    {
-        _AttackRangeChk();
-    }
-
+     
+   
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (!_gameSystem.IsGameEnd && col.gameObject.TryGetComponent(out NodeEditor tile))
+        if (!_gameSystem.IsGameEnd && !_isDie && col.gameObject.TryGetComponent(out NodeEditor tile))
         {
             if (!isPathFindOn)
             {
@@ -295,11 +307,34 @@ public class UnitObj : MonoBehaviour
                 _curPos_Y = tile.GetNodeCountY();
             }
         }
+        else if (!_gameSystem.IsGameEnd && _isDie && col.gameObject.TryGetComponent(out NodeEditor Node))
+        {
+            if (_node != Node)
+            {
+                _node = Node;
+            }
+
+            if (State == UnitState.Enemy)
+            {
+                Node.SetisEnemyCheck(false);
+            }
+
+            if (Node.GetIsStayCheck())
+            {
+                Node.SetIsStayCheck(false);
+            }
+
+            if (_curPos_Y != Node.GetNodeCountY() || _curPos_X != Node.GetNodeCountX())
+            {
+                _curPos_X = Node.GetNodeCountX();
+                _curPos_Y = Node.GetNodeCountY();
+            }
+        }
     }
 
     private void OnTriggerStay2D(Collider2D col)
     {
-        if (!_gameSystem.IsGameEnd && col.gameObject.TryGetComponent(out NodeEditor tile))
+        if (!_gameSystem.IsGameEnd && !_isDie && col.gameObject.TryGetComponent(out NodeEditor tile))
         {
             if (!isPathFindOn)
             {
@@ -322,6 +357,29 @@ public class UnitObj : MonoBehaviour
                 _curPos_Y = tile.GetNodeCountY();
             }
         }
+        else if (!_gameSystem.IsGameEnd && _isDie && col.gameObject.TryGetComponent(out NodeEditor Node))
+        {
+            if (_node != Node)
+            {
+                _node = Node;
+            }
+
+            if (State == UnitState.Enemy)
+            {
+                Node.SetisEnemyCheck(false);
+            }
+
+            if (Node.GetIsStayCheck())
+            {
+                Node.SetIsStayCheck(false);
+            }
+
+            if (_curPos_Y != Node.GetNodeCountY() || _curPos_X != Node.GetNodeCountX())
+            {
+                _curPos_X = Node.GetNodeCountX();
+                _curPos_Y = Node.GetNodeCountY();
+            }
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -338,6 +396,7 @@ public class UnitObj : MonoBehaviour
                 tile.SetIsStayCheck(false);
             }
         }
+        
     }
 
     private void _AttackRangeChk()
@@ -670,9 +729,7 @@ public class UnitObj : MonoBehaviour
             yield return null;
         }
 
-
         yield return new WaitForSecondsRealtime(0.5f);
-
 
         switch (UnitJob)
         {
@@ -680,110 +737,71 @@ public class UnitObj : MonoBehaviour
             case Unit.Archor:
                 if (_contactEnemy != null)
                 {
-                    _contactEnemy._hp -= 5f;
+                    if (!_contactEnemy._isDie)
+                        _contactEnemy._hp -= 5f;
                     if (_contactEnemy._hp <= 0)
                     {
                         _contactEnemy._isDie = true;
                         _contactEnemy = null;
+                        PathList.Clear();
+                        isPathFindOn = false;
+                        PathList.Clear();
+                        switch (State)
+                        {
+                            case UnitState.Enemy:
+                                if (_gameSystem.PlayerCount < 0)
+                                {
+                                    _gameSystem.EndGame();
+                                }
+                               
+                                break;
+                            case UnitState.Player:
+                                if (_gameSystem.EnemyCount < 0)
+                                {
+                                    _gameSystem.EndGame();
+                                }
+                               
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
-               
-                if(_contactEnemy == null)
-                {
-                    switch (State)
-                    {
-                        case UnitState.Enemy:
-                            if (_gameSystem.PlayerCount > 0)
-                            {
-                                _gameSystem.PlayerCount -= 1;
-                                UnitBe = UnitBehavior.Idle;
-                            }
-                            else
-                            {
-                                _gameSystem.EndGame();
-                            }
-                            break;
-                        case UnitState.Player:
-                            if (_gameSystem.EnemyCount > 0)
-                            {
-                                _gameSystem.EnemyCount -= 1;
-                                UnitBe = UnitBehavior.Move;
-                            }
-                            else
-                            {
-                                _gameSystem.EndGame();
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                            
                 break;
             case Unit.Warrior:
                 if (_contactEnemyList.Count > 0)
                 {
                     for (int i = _contactEnemyList.Count - 1; i >= 0; i--)
                     {
-                        _contactEnemyList[i]._hp -= 5f;
+                        if(!_contactEnemyList[i]._isDie)
+                            _contactEnemyList[i]._hp -= 5f;
 
                         if (_contactEnemyList[i]._hp <= 0)
                         {
                             _contactEnemyList[i]._isDie = true;
                             _contactEnemyList.RemoveAt(i);
+                            isPathFindOn = false;
+                            PathList.Clear();
                             switch (State)
                             {
                                 case UnitState.Enemy:
-                                    if (_gameSystem.PlayerCount > 0)
-                                    {
-                                        _gameSystem.PlayerCount -= 1;
-                                    }
-                                    else
+                                    if (_gameSystem.PlayerCount < 0)
                                     {
                                         _gameSystem.EndGame();
                                     }
+
                                     break;
                                 case UnitState.Player:
-                                    if (_gameSystem.EnemyCount > 0)
-                                    {
-                                        _gameSystem.EnemyCount -= 1;
-                                    }
-                                    else
+                                    if (_gameSystem.EnemyCount < 0)
                                     {
                                         _gameSystem.EndGame();
                                     }
+                                 
                                     break;
                             }
                         }
                     }                   
-                }
-
-                if (_contactEnemyList.Count <= 0)
-                {
-                    switch (State)
-                    {
-                        case UnitState.Enemy:
-                            if (_gameSystem.PlayerCount > 0)
-                            {
-                                UnitBe = UnitBehavior.Idle;
-                            }
-                            else
-                            {
-                                _gameSystem.EndGame();
-                            }
-                            break;
-                        case UnitState.Player:
-                            if (_gameSystem.EnemyCount > 0)
-                            {
-                                UnitBe = UnitBehavior.Move;
-                            }
-                            else
-                            {
-                                _gameSystem.EndGame();
-                            }
-                            break;
-                        default:
-                            break;
-                    }
                 }
                 break;
             default:
@@ -836,6 +854,11 @@ public class UnitObj : MonoBehaviour
 
     private IEnumerator _PathFind() 
     {
+        for (int i = 0; i < nodeEditor.TileMap.Count; i++)
+        {
+            nodeEditor.TileMap[i].GetComponent<NodeEditor>().Reset_prevNode();
+        }
+
         //오브젝트 이동 이전 적 위치 찾기
         _astarSystem.FindEnemy(_curPos_X, _curPos_Y);
 

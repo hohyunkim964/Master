@@ -31,6 +31,15 @@ public class NodeEditor : MonoBehaviour
         }
     }
 
+    public void Reset_prevNode() 
+    {
+        _prevNode.Clear();
+        for (int i = 0; i < _gameSystem.PlayerCount; i++)
+        {
+            _prevNode.Add(null);
+        }
+    }
+
     public bool GetIsStayCheck()
     {
         return isStay;
