@@ -107,7 +107,6 @@ public class AstarSystem : MonoBehaviour
                 {
                     unit.isNotFoundPath = false;
                     if ((unit.CloseList[j] != unit.NodeDirction[x] && !unit.NodeDirction[x].GetIsStayCheck()))
-                    //    || (unit.CloseList[j] != unit.NodeDirction[x] && unit.NodeDirction[x].GetIsStayCheck() && !unit.NodeDirction[x].GetIsEnemyCheck()))
                     {
                         if (unit.NodeDirction[x].GetPrevNodeNum(y) == null && unit.NodeDirction[x] != unit._StartNode)
                         {

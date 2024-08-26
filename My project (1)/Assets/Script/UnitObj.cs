@@ -49,6 +49,7 @@ public class UnitObj : MonoBehaviour
     public int _curPos_Y = -1;
     public float Speed = 10f;
     public float _hp = 0;
+    private Vector3 _movePosTile;
 
     private MapEditor nodeEditor;
     private AstarSystem _astarSystem;
@@ -168,27 +169,37 @@ public class UnitObj : MonoBehaviour
                     {
                         case UnitState.Player:        
                             if (!IsAttack)
-                            {                              
+                            {
                                 if (PathList.Count != 0)
-                                {                                 
-                                    UnitBe = UnitBehavior.Move;
+                                {
+                                    if (UnitBe != UnitBehavior.Move)
+                                    {
+                                        UnitBe = UnitBehavior.Move;
+                                        ChangePattern();
+                                    }
                                 }
                                 else
                                 {
-                                    if (PathList.Count == 0 && !isPathFindOn)
+                                    if (PathList.Count == 0)
                                     {
-                                        isPathFindOn = true;
-                                        UnitBe = UnitBehavior.Idle;
-                                     
-                                        if (_node != null)
-                                            StartCoroutine(_PathFind());
+                                        if (!isPathFindOn)
+                                        {
+                                            isPathFindOn = true;
+                                            UnitBe = UnitBehavior.Idle;
+
+                                            if (_node != null)
+                                                StartCoroutine(_PathFind());
+                                        }
                                     }
                                 }
                             }
                             else
                             {
                                 if (UnitBe != UnitBehavior.Attack)
+                                {
                                     UnitBe = UnitBehavior.Attack;
+                                    ChangePattern();
+                                }
                             }
                             break;
                         case UnitState.Enemy:
@@ -270,8 +281,8 @@ public class UnitObj : MonoBehaviour
                     _corCoutine = StartCoroutine(_Idle());
                     break;
                 case UnitBehavior.Attack:
-                    PathList.Clear();
                     isFindPath = false;
+                    isPathFindOn = false;
                     _corCoutine = StartCoroutine(_Attack());
                     break;
                 case UnitBehavior.Move:
@@ -560,24 +571,22 @@ public class UnitObj : MonoBehaviour
                                 {
                                     if (enemyPosX != _curPos_X && enemyPosY != _curPos_Y)
                                     {
-                                        //주변 여덟칸 중 대각선 4개 방향 체크
-                                        if ((enemyPosX >= _curPos_X - 2 || enemyPosX <= _curPos_X + 2) && (enemyPosY >= _curPos_Y - 2 || enemyPosY <= _curPos_Y + 2))
+                                        if ((enemyPosX >= _curPos_X - 2 && enemyPosX <= _curPos_X + 2 && enemyPosY >= _curPos_Y - 1 && enemyPosY <= _curPos_Y + 1)
+                                            || (enemyPosX >= _curPos_X - 1 && enemyPosX <= _curPos_X + 1 && enemyPosY >= _curPos_Y - 2 && enemyPosY <= _curPos_Y + 2))
                                         {
                                             IsAttack = true;
                                         }
                                     }
                                     else if (enemyPosX != _curPos_X && enemyPosY == _curPos_Y)
                                     {
-                                        //주변 여덟칸 중 좌우 방향 체크
-                                        if (enemyPosX >= _curPos_X - 3 || enemyPosX <= _curPos_X + 3)
+                                        if (enemyPosX >= _curPos_X - 3 && enemyPosX <= _curPos_X + 3)
                                         {
                                             IsAttack = true;
                                         }
                                     }
                                     else if (enemyPosX == _curPos_X && enemyPosY != _curPos_Y)
                                     {
-                                        //주변 여덟칸 중 상하 방향 체크
-                                        if (enemyPosY >= _curPos_Y - 3 || enemyPosY <= _curPos_Y + 3)
+                                        if (enemyPosY >= _curPos_Y - 3 && enemyPosY <= _curPos_Y + 3)
                                         {
                                             IsAttack = true;
                                         }
@@ -602,6 +611,17 @@ public class UnitObj : MonoBehaviour
 
     private IEnumerator _Attack()
     {
+        var runTime = 0.0f;
+
+
+
+        while (runTime < 0.3f)
+        {
+            runTime += Time.deltaTime;
+            transform.position = Vector3.Lerp(this.gameObject.transform.position, new Vector3(Mathf.Ceil(this.gameObject.transform.position.x), Mathf.Ceil(this.gameObject.transform.position.y)),runTime / 1f);
+            yield return null;
+        }
+
         PathList.Clear();
 
         while (!_gameSystem.IsGameTurnEnd)
@@ -807,7 +827,7 @@ public class UnitObj : MonoBehaviour
             default:
                 break;
         }
-
+                
         ChangePattern();
     }
 
@@ -839,7 +859,9 @@ public class UnitObj : MonoBehaviour
             while (runTime < 1f)
             {
                 runTime += Time.deltaTime;
+               // _movePosTile = PathList[i].transform.position;
                 transform.position = Vector3.Lerp(this.gameObject.transform.position, PathList[i].transform.position, runTime / 1f);
+
                 yield return null;
             }
         }
@@ -856,8 +878,12 @@ public class UnitObj : MonoBehaviour
     {
         for (int i = 0; i < nodeEditor.TileMap.Count; i++)
         {
-            nodeEditor.TileMap[i].GetComponent<NodeEditor>().Reset_prevNode();
+            nodeEditor.TileMap[i].GetComponent<NodeEditor>().Reset_prevNode(PlayerNum);
         }
+
+        NodeDirction.Clear();
+        OpenList.Clear();
+        CloseList.Clear();
 
         //오브젝트 이동 이전 적 위치 찾기
         _astarSystem.FindEnemy(_curPos_X, _curPos_Y);
